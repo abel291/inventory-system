@@ -1,0 +1,22 @@
+@import "/vendor/filament/filament/resources/css/theme.css";
+
+@config 'tailwind.config.js';
+
+.fi-input-wrp {
+    @apply rounded;
+}
+
+.fi-ta-ctn,
+.fi-sidebar-item-button,
+.fi-btn {
+    @apply rounded-md;
+}
+
+.fi-ta-text,
+.fi-ta-image {
+    @apply py-2.5;
+}
+
+.fi-sidebar {
+    @apply !bg-gray-50 dark:!bg-neutral-900;
+}

@@ -2,9 +2,14 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\CategoryResource;
+use App\Filament\Resources\ProductResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
+use Filament\Navigation\NavigationBuilder;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -25,6 +30,14 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+
+            // ->userMenuItems([
+            //     MenuItem::make()
+            //         ->label('Settings')
+            //         ->url('/')
+            //         ->icon('heroicon-o-cog-6-tooth'),
+            //     // ...
+            // ])
             ->default()
             ->id('admin')
             ->path('admin')

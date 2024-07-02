@@ -24,13 +24,13 @@ use Spatie\Permission\Models\Role;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-    public static ?string $label = 'Usuario';
-    protected static ?string $pluralModelLabel  = 'Usuarios';
-    protected static ?string $navigationGroup  = 'Usuarios';
+    public static ?string $label = 'Empleado';
+    protected static ?string $pluralModelLabel  = 'Empleados';
+    protected static ?string $navigationGroup  = 'Seguridad';
 
-    protected static ?string $navigationIcon = 'heroicon-s-user';
+    protected static ?string $navigationIcon = 'heroicon-o-user';
 
-    protected static ?int $navigationSort = -2;
+    protected static ?int $navigationSort = 1;
 
     public static function mutateDataPassword(array $data): array
     {

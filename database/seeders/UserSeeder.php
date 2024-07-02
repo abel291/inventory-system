@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
 
         $user_regular->assignRole('cashier');
 
-        User::factory(40)->create()->each(function (User $user) {
+        User::factory(2)->create()->each(function (User $user) {
             $user->assignRole('cashier');
         });
     }

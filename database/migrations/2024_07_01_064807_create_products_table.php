@@ -14,18 +14,19 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('code');
             $table->string('slug')->unique()->index();
             $table->text('description_min')->nullable();
             $table->string('img')->nullable();
-            $table->unsignedInteger('cost', 12)->nullable();
-            $table->unsignedInteger('price', 12)->default(0);
+            $table->unsignedInteger('price')->default(0);
+            $table->unsignedInteger('cost');
             $table->unsignedTinyInteger('discount')->nullable();
-            $table->unsignedInteger('stock', 12)->nullable();
+            $table->unsignedInteger('price_discount')->nullable();
+            $table->unsignedInteger('stock');
             $table->unsignedSmallInteger('max_quantity');
             $table->unsignedSmallInteger('min_quantity');
-            // $table->boolean('featured')->default(false);
             $table->boolean('active')->default(true);
-            $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
+            // $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
 
             $table->timestamps();

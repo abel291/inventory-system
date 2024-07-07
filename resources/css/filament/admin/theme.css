@@ -17,6 +17,27 @@
     @apply py-2.5;
 }
 
-.fi-sidebar {
-    @apply !bg-gray-50 dark:!bg-neutral-900;
+.fi-sidebar-header,
+.fi-sidebar-nav {
+    @apply bg-primary-900 text-white;
+}
+.fi-sidebar-header .fi-logo,
+.fi-sidebar-item-label {
+    @apply text-white;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-button {
+    @apply bg-primary-800;
+}
+.fi-sidebar-item .fi-badge {
+    @apply bg-neutral-800 text-neutral-100 ring-primary-200/10;
+}
+.fi-sidebar-item .fi-sidebar-item-button {
+    @apply hover:bg-primary-800;
+}
+.fi-sidebar-item-active .fi-sidebar-item-icon {
+    @apply text-white;
+}
+.fi-sidebar-item .fi-sidebar-item-icon {
+    @apply group-hover:text-white;
 }

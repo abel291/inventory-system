@@ -23,7 +23,6 @@ class UserSeeder extends Seeder
         Artisan::call('shield:generate --all');
 
         $user_admin = User::factory()->create([
-            'name' => 'Admin User',
             'email' => 'user@user.com',
         ]);
 
@@ -32,10 +31,9 @@ class UserSeeder extends Seeder
         // $user_admin->assignRole('super_admin');
 
 
-        $role = Role::create(['name' => 'cashier']); //cajera
+        Role::create(['name' => 'cashier']); //cajera
 
         $user_regular = User::factory()->create([
-            'name' => 'Regular User',
             'email' => 'user@user2.com',
         ]);
 

@@ -19,37 +19,22 @@ class ProductSeeder extends Seeder
     {
         Product::truncate();
 
-        $products_json = collect(Storage::json("products/products.json"))->shuffle()->take(10);
-
-        $faker = Faker\Factory::create();
+        $products_json = collect(Storage::json(env('DB_FAKE_PRODUCTS')))->shuffle()->take(10);
 
         $categories = Category::select('id', 'name')->get()->pluck('id', 'name');
 
 
         foreach ($products_json as $key => $product) {
 
-            // $this->command->line($key);
-
             $price = $product['price'];
-
-            // $discount = rand(0, 1) ? $faker->randomElement([10, 20, 30, 40, 50]) : 0;
-
-            // $price_discount = $price - ($price * ($discount / 100));
-
-            $cost = round($price * 0.80);
 
             $products_db[] = Product::factory()->make([
                 'name' => $product['name'],
-                // 'slug' => Str::slug($product['name'], '-') . rand(0, 99999),
                 'img' => $product['img'],
-                'cost' => $cost,
                 'price' => $price,
-                // 'discount' => $discount,
-                // 'price_discount' => $price_discount,
                 'created_at' => now(),
                 'updated_at' => now(),
                 'category_id' => $categories[$product['category']],
-
             ])->toArray();
         }
 

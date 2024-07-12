@@ -21,22 +21,14 @@ class ProductFactory extends Factory
 
         $price = rand(100, 1000); //$100 - $1.000
 
-        $discount = fake()->randomElement([0, 10, 20, 30, 40, 50]);
-
-        $price_discount = $price - ($price * ($discount / 100));
-
-        $cost = round($price * 0.80);
-
         return [
             'name' => ucfirst($name),
-            'barcode' => fake()->randomNumber(8, true),
-            // 'slug' => Str::slug($name),
+            'reference' => strtoupper(fake()->bothify('#####???')),
+            'barcode' => fake()->ean13(),
             'description_min' => fake()->text(250),
             'price' => $price,
-            // 'discount' => $discount,
-            // 'price_discount' => $price_discount,
-            'cost' => $cost,
-            // 'stock' => rand(10, 40),
+            'discount' => fake()->randomElement([0, 10, 20, 30, 40, 50]),
+
             'img' => 'item-' . rand(1, 52) . '.jpg',
             'min_quantity' => rand(1, 10),
             'max_quantity' => rand(10, 40),

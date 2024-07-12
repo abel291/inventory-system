@@ -8,14 +8,13 @@ use App\Models\Location;
 use App\Models\Product;
 use App\Models\Stock;
 use Filament\Forms;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StockResource extends Resource
 {
@@ -24,111 +23,63 @@ class StockResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static ?string $label = 'Mercancia';
-
-    protected static ?string $pluralModelLabel  = 'Mercancias';
+    protected static ?string $pluralModelLabel  = 'Mercancia';
     protected static ?string $navigationGroup  = 'Inventario';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('location_id')
-                    ->relationship(name: 'location', titleAttribute: 'name')
-                    ->getOptionLabelFromRecordUsing(fn (Location $record) => $record->type->getLabel() . " | " . $record->name)
-                    ->label('Ubicacion')
-                    ->native(false)
-                    ->required(),
-
-                Repeater::make('products')
-                    ->label('Productos')
-                    ->schema([
-                        Forms\Components\Select::make('product_id')
-                            ->LABEL('Producto')
-                            ->placeholder('Escriba el codigo de barra o nombre del producto')
-                            ->relationship(
-                                name: 'product',
-                                titleAttribute: 'name'
-                            )
-                            ->getOptionLabelFromRecordUsing(fn (Product $record) => "{$record->barcode} - {$record->name}")
-                            ->searchable(['name', 'barcode'])
-                        // ->getSearchResultsUsing(
-                        //     fn (string $search): array =>
-                        //     Product::select('name', 'barcode', 'id')
-                        //         ->whereAny(['name', 'barcode'], 'like', "%{$search}%")
-                        //         ->limit(50)
-                        //         ->pluck('name', 'id')
-                        //         ->toArray()
-                        // )
-                        // ->getOptionLabelFromRecordUsing(fn (Product $record) => "{$record->barcode} {$record->name}")
-
-                        // ->searchable()
-                        // ->label('Productos')
-                        // ->required()
-                        ,
-                        Forms\Components\TextInput::make('stock')
-                            ->required()
-                            ->numeric(),
-                        // Forms\Components\TextInput::make('security_stock')
-                        //     ->required()
-                        //     ->numeric(),
-                    ])->columnSpanFull()
-            ])->columns(2);
+                //
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')->label('Producto')
-                    ->wrap()
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('location.name')->label('Ubicacion')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('stock')
-                    ->numeric()
-                // ->sortable()
-                ,
-                Tables\Columns\TextColumn::make('security_stock')
-                    ->numeric()
-                // ->sortable()
-                ,
+                Tables\Columns\ImageColumn::make('product.img')->label('Imagen'),
+                Tables\Columns\TextColumn::make('product.name')
+                    ->description(fn (Stock $record): string => $record->product->barcode)
+                    ->wrap()->label('Codigo - Nombre'),
+                Tables\Columns\TextColumn::make('location.name')->label('Ubicacion')->badge(),
+                Tables\Columns\TextColumn::make('cost')->label('Costo')->numeric()->prefix('$'),
+                Tables\Columns\TextColumn::make('product.price')->label('Precio')->numeric()->prefix('$'),
+                // Tables\Columns\TextColumn::make('quantity')->label('Existencia'),
+                Tables\Columns\TextColumn::make('remaining')
+                    ->sortable()
+                    ->label('Existencia'),
 
-                // ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Ultima Modificacion')
+                    ->SINCE()
+
             ])
-            ->defaultSort('id', 'desc')
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->with('location', 'product.category')
+                    ->where('type', 'total');
+            })
             ->filters([
-                SelectFilter::make('location')
-                    ->label('Ubicacion')
-                    ->relationship('location', 'name'),
-                SelectFilter::make('product')
+                SelectFilter::make('product_id')
+                    ->options(Product::all()->pluck('nameBarcode', 'id'))
+                    ->optionsLimit(12)
                     ->label('Producto')
-                    ->relationship('product', 'name')
                     ->searchable()
+                    ->columnSpan(3),
+                SelectFilter::make('location_id')
+                    ->options(Location::all()->pluck('name', 'id'))
+                    ->columnSpan(2)
+                    ->preload()->label('Ubicacion')
             ])
-            ->filtersTriggerAction(
-                fn (Action $action) => $action
-                    ->button()
-                    ->label('Filter'),
-            )
-            ->actions([
-                Tables\Actions\EditAction::make()->icon(null)->icon(false),
-                Tables\Actions\DeleteAction::make()->icon(false),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    // Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+
+            ->searchPlaceholder('Codigo de barra o nombre del producto')
+            ->defaultSort('id', 'desc');
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStocks::route('/'),
-            'create' => Pages\CreateStock::route('/create'),
-            'edit' => Pages\EditStock::route('/{record}/edit'),
+            'index' => Pages\ManageStocks::route('/'),
         ];
     }
 }

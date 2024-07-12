@@ -12,7 +12,7 @@ class StockAdjustment extends Model
     use HasFactory;
 
     protected $casts = [
-        'type' => StockAdjustmentTypeEnum::class,
+        // 'data' => 'json',
     ];
 
     public function product(): BelongsTo

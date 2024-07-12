@@ -17,6 +17,7 @@ class StockAdjustmentSeeder extends Seeder
     public function run(): void
     {
         $stock_products = [];
+        StockAdjustment::truncate();
         $users = User::select('id')->get();
         foreach (Stock::select('id', 'stock')->get() as $stock) {
 
@@ -27,8 +28,10 @@ class StockAdjustmentSeeder extends Seeder
 
             if ($typeOperaction ==  StockAdjustmentTypeEnum::INCREASE) {
                 $final_stock = $adjustment + $stock->stock;
+                $stock->increment('stock', $final_stock);
             } else {
                 $final_stock = $stock->stock - $adjustment;
+                $stock->decrement('stock', $final_stock);
             }
 
             $stock_products[] = [
@@ -38,6 +41,7 @@ class StockAdjustmentSeeder extends Seeder
                 'type' => $typeOperaction,
                 'note' => fake()->sentence(),
                 'approved' => rand(1, 0),
+                'status' => 'aprove',
                 'user_id' => $users->random()->id,
                 'stock_id' => $stock->id,
                 'created_at' => now(),

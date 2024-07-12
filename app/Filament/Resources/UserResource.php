@@ -94,7 +94,7 @@ class UserResource extends Resource
 	{
 		return $table
 			->columns([
-				Tables\Columns\TextColumn::make('name')->label('Nombre'),
+				Tables\Columns\TextColumn::make('name')->translateLabel(),
 				Tables\Columns\TextColumn::make('email')->label('Email'),
 				Tables\Columns\TextColumn::make('phone')->label('Telefono'),
 				Tables\Columns\TextColumn::make('roles.name')->label('Rol')->badge()->placeholder('Sin Role')

@@ -12,14 +12,36 @@
     @apply rounded-md;
 }
 
+.fi-btn-color-primary {
+    @apply bg-gray-800 !important;
+}
+
+.fi-btn-color-gray {
+    @apply dark:bg-transparent dark:ring-transparent !important;
+}
+
 .fi-ta-text,
 .fi-ta-image {
-    @apply py-2.5;
+    @apply py-2;
+}
+.fi-ta-image > div {
+    @apply justify-center;
+}
+
+.fi-ta-image {
+    @apply w-full;
+}
+.fi-ta-image img {
+    @apply w-full  max-w-full  object-contain h-14;
+}
+
+.fi-ta-actions .fi-link span {
+    @apply font-medium;
 }
 
 .fi-sidebar-header,
 .fi-sidebar-nav {
-    @apply bg-primary-900 text-white;
+    @apply bg-primary-900 text-white dark:bg-transparent;
 }
 .fi-sidebar-header .fi-logo,
 .fi-sidebar-item-label {
@@ -27,7 +49,7 @@
 }
 
 .fi-sidebar-item-active .fi-sidebar-item-button {
-    @apply bg-primary-800;
+    @apply bg-neutral-800;
 }
 .fi-sidebar-item .fi-badge {
     @apply bg-neutral-800 text-neutral-100 ring-primary-200/10;

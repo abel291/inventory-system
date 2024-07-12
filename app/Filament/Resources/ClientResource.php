@@ -59,7 +59,7 @@ class ClientResource extends Resource
 		return $table
 			->columns([
 				Tables\Columns\TextColumn::make('name')
-					->label('Nombre')
+					->translateLabel()
 					->description(fn (Contact $record): string => $record->email)
 					->searchable(),
 				// Tables\Columns\TextColumn::make('nit')

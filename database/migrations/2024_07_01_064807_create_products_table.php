@@ -13,21 +13,19 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('barcode');
-            // $table->string('slug')->unique()->index();
+            $table->string('name')->index();
+            $table->string('barcode', 15)->index();
+            $table->string('reference', 20)->index();
             $table->text('description_min')->nullable();
             $table->string('img')->nullable();
             $table->unsignedInteger('price')->default(0);
-            $table->unsignedInteger('cost');
-            // $table->unsignedTinyInteger('discount')->nullable();
-            // $table->unsignedInteger('stock');
-            $table->unsignedSmallInteger('max_quantity');
-            $table->unsignedSmallInteger('min_quantity');
+            $table->unsignedTinyInteger('discount')->default(0);
+            // $table->unsignedInteger('cost')->nullable();
+            $table->unsignedMediumInteger('security_stock')->default(5);
+            $table->unsignedSmallInteger('max_quantity')->nullable();
+            $table->unsignedSmallInteger('min_quantity')->nullable();
             $table->boolean('active')->default(true);
-            // $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
-
             $table->timestamps();
         });
     }

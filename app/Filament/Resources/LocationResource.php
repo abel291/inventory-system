@@ -30,7 +30,7 @@ class LocationResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('nombre')
+                    ->translateLabel()
                     ->required(),
                 Forms\Components\TextInput::make('phone')
                     ->tel()
@@ -53,24 +53,25 @@ class LocationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('type')->badge()
-                    ->label('Tipo de ubicacion')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Nombre')
-                    ->description(fn (Location $record): string => $record->address)
+
+                Tables\Columns\TextColumn::make('nameType')
+                    ->translateLabel()
+                    // ->description(fn (Location $record): string => $record->type->getLabel())
                     ->wrap()
                     ->searchable(),
                 // Tables\Columns\TextColumn::make('phone')
                 //     ->searchable(),
                 Tables\Columns\TextColumn::make('products_count')
                     ->counts('products')
+                    ->numeric()
                     ->label('Productos'),
 
-                Tables\Columns\TextColumn::make('products')
+                Tables\Columns\TextColumn::make('stock')
                     ->label('Total unidades')
+                    ->numeric()
                     ->getStateUsing(function (Location $record) {
-                        return $record->products->sum('pivot.stock');
+                        // dd($record);
+                        return $record->stock->sum('remaining');
                     }),
                 Tables\Columns\IconColumn::make('active')
                     ->label('Activo')
@@ -83,6 +84,10 @@ class LocationResource extends Resource
                     ->sortable()
 
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->with('stock');
+                // ->where('author_id', auth()->id());
+            })
             ->filters([
                 //
             ])
@@ -100,7 +105,7 @@ class LocationResource extends Resource
                     // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->description('El ingreso de mercancia se gestiona desde la seccion "Mercancias"');
+            ->defaultSort('id', 'desc');
     }
 
     public static function getRelations(): array
@@ -116,7 +121,9 @@ class LocationResource extends Resource
             'index' => Pages\ListLocations::route('/'),
             'create' => Pages\CreateLocation::route('/create'),
             'edit' => Pages\EditLocation::route('/{record}/edit'),
-            'products' => Pages\ProductsRelation::route('/{record}/products'),
+            // 'products' => Pages\LocationProductsRelation::route('/{record}/products'),
+            'products' => Pages\ManageLocationProducts::route('/{record}/products'),
+
 
         ];
     }

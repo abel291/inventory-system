@@ -16,9 +16,9 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::truncate();
+        // dd(env('DB_FAKE_PRODUCTS'));
+        $products = collect(Storage::json(env('DB_FAKE_PRODUCTS')));
 
-        $products = collect(Storage::json('/products/products.json'));
-        // dd(($products)->count());
         $categories = $products->unique('category')->map(function ($item) {
 
             $slug = Str::slug($item['category']);

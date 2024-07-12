@@ -40,12 +40,20 @@ return [
             'driver' => 'local',
             'root' => public_path(),
             'throw' => false,
+            'url' => '',
         ],
 
+        // 'public' => [
+        //     'driver' => 'local',
+        //     'root' => storage_path('app/public'),
+        //     'url' => env('APP_URL') . '/storage',
+        //     'visibility' => 'public',
+        //     'throw' => false,
+        // ],
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL') . '/storage',
+            'root' => public_path(),
+            'url' => '',
             'visibility' => 'public',
             'throw' => false,
         ],

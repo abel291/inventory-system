@@ -77,6 +77,7 @@ class AdminPanelProvider extends PanelProvider
             )
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
-            ]);
+            ])
+            ->globalSearchDebounce('750ms');;
     }
 }

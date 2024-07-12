@@ -15,7 +15,7 @@ class StockPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_stock');
+        return $user->can('view_any_stock::entry');
     }
 
     /**
@@ -23,7 +23,7 @@ class StockPolicy
      */
     public function view(User $user, Stock $stock): bool
     {
-        return $user->can('view_stock');
+        return $user->can('view_stock::entry');
     }
 
     /**
@@ -31,7 +31,7 @@ class StockPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_stock');
+        return $user->can('create_stock::entry');
     }
 
     /**
@@ -39,7 +39,7 @@ class StockPolicy
      */
     public function update(User $user, Stock $stock): bool
     {
-        return $user->can('update_stock');
+        return $user->can('update_stock::entry');
     }
 
     /**
@@ -47,7 +47,7 @@ class StockPolicy
      */
     public function delete(User $user, Stock $stock): bool
     {
-        return $user->can('delete_stock');
+        return $user->can('delete_stock::entry');
     }
 
     /**
@@ -55,7 +55,7 @@ class StockPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_stock');
+        return $user->can('delete_any_stock::entry');
     }
 
     /**
@@ -63,7 +63,7 @@ class StockPolicy
      */
     public function forceDelete(User $user, Stock $stock): bool
     {
-        return $user->can('force_delete_stock');
+        return $user->can('force_delete_stock::entry');
     }
 
     /**
@@ -71,7 +71,7 @@ class StockPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_stock');
+        return $user->can('force_delete_any_stock::entry');
     }
 
     /**
@@ -79,7 +79,7 @@ class StockPolicy
      */
     public function restore(User $user, Stock $stock): bool
     {
-        return $user->can('restore_stock');
+        return $user->can('restore_stock::entry');
     }
 
     /**
@@ -87,7 +87,7 @@ class StockPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_stock');
+        return $user->can('restore_any_stock::entry');
     }
 
     /**
@@ -95,7 +95,7 @@ class StockPolicy
      */
     public function replicate(User $user, Stock $stock): bool
     {
-        return $user->can('replicate_stock');
+        return $user->can('replicate_stock::entry');
     }
 
     /**
@@ -103,6 +103,6 @@ class StockPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_stock');
+        return $user->can('reorder_stock::entry');
     }
 }

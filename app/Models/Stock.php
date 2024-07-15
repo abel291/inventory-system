@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-#[ObservedBy([StockObserver::class])]
+// #[ObservedBy([StockObserver::class])]
 class Stock extends Model
 {
     use HasFactory;

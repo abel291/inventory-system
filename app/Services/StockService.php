@@ -5,8 +5,7 @@ namespace App\Services;
 class StockService
 {
 
-    public function getFromCookie()
+    public function updateStock($type, $model)
     {
-        // Logic to retrieve and return a cart.
     }
 }

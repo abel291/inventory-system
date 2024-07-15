@@ -48,6 +48,10 @@ class StockResource extends Resource
                 // Tables\Columns\TextColumn::make('quantity')->label('Existencia'),
                 Tables\Columns\TextColumn::make('remaining')
                     ->sortable()
+                    ->state(function (Stock $record): string {
+                        return $record->quantity . " / " . $record->remaining;
+                    })
+
                     ->label('Existencia'),
 
                 Tables\Columns\TextColumn::make('updated_at')

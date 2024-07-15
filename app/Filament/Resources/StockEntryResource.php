@@ -23,7 +23,7 @@ class StockEntryResource extends Resource
 {
     protected static ?string $model = Stock::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-right-end-on-rectangle';
 
     public static ?string $label = 'Entrada mercancia';
     protected static ?string $pluralModelLabel  = 'Entrada mercancia';

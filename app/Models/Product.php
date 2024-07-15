@@ -44,6 +44,15 @@ class Product extends Model
             ->where('remaining', '>', 0);
     }
 
+    public function stockAdjustments(): BelongsToMany
+    {
+        return $this->belongsToMany(StockAdjustment::class, 'stock_adjustment_product')->as('stock')->withPivot([
+            'quantity',
+            'price',
+            'cost'
+        ]);
+    }
+
     public function totalStock(): HasMany
     {
         return $this->hasMany(Stock::class)->where('type', 'total')->where('remaining', '>', 0);

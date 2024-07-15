@@ -8,31 +8,39 @@ use Filament\Support\Contracts\HasLabel;
 
 enum StockAdjustmentTypeEnum: string implements HasLabel, HasColor, HasIcon
 {
-    case INCREASE = 'increase';
-    case DECREASE = 'decrease';
+    case ENTRY = 'entry';
+    case TRANSFER  = 'transfer';
+    case NEGATIVE_TRANSFER  = 'negative_adjustment';
+    case POSITIVE_TRANSFER  = 'positive_adjustment';
 
 
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::INCREASE => 'Incremento',
-            self::DECREASE => 'Disminucion',
+            self::ENTRY => 'Incremento',
+            self::TRANSFER => 'Disminucion',
+            self::NEGATIVE_TRANSFER => 'Disminucion',
+            self::POSITIVE_TRANSFER => 'Disminucion',
         };
     }
 
     public function getColor(): string | array | null
     {
         return match ($this) {
-            self::INCREASE => 'success',
-            self::DECREASE => 'danger',
+            self::ENTRY => 'success',
+            self::TRANSFER => 'danger',
+            self::NEGATIVE_TRANSFER => 'danger',
+            self::POSITIVE_TRANSFER => 'danger',
         };
     }
 
     public function getIcon(): string
     {
         return match ($this) {
-            self::INCREASE => 'heroicon-m-arrow-up',
-            self::DECREASE => 'heroicon-m-arrow-down',
+            self::ENTRY => 'heroicon-m-arrow-up',
+            self::TRANSFER => 'heroicon-m-arrow-down',
+            self::NEGATIVE_TRANSFER => 'heroicon-m-arrow-down',
+            self::POSITIVE_TRANSFER => 'heroicon-m-arrow-down',
         };
     }
 }

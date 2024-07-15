@@ -13,33 +13,72 @@ return new class extends Migration
     {
         Schema::create('stock', function (Blueprint $table) {
             $table->id();
-            $table->string('type')->index()->default('stock'); // total - sotck
             $table->unsignedMediumInteger('quantity');
-            $table->unsignedMediumInteger('remaining');
-            $table->unsignedMediumInteger('cost')->nullable();
-            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->unsignedMediumInteger('price');
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->foreignId('location_id')->constrained()->cascadeOnDelete();
-
             $table->timestamps();
         });
 
-        // Schema::create('stock_adjustments', function (Blueprint $table) {
-        //     $table->id();
-        //     // $table->unsignedMediumInteger('initial_stock');
-        //     // $table->unsignedMediumInteger('adjustment');
-        //     // $table->unsignedMediumInteger('final_stock');
-        //     $table->boolean('approved');
-        //     $table->string('type');
-        //     $table->string('status')->nullable(); //aprobado pendiente rechazado
-        //     $table->string('note')->nullable();
-        //     $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-        //     $table->foreignId('stock_id')->constrained()->cascadeOnDelete();
-        //     $table->foreignId('location_to_id')->nullable()->constrained()->cascadeOnDelete();
-        //     $table->foreignId('location_from_id')->nullable()->constrained()->nullOnDelete();
+        Schema::create('stock_adjustments', function (Blueprint $table) {
+            $table->id();
+            // $table->string('type')->index(); // ajuste, entrada, traslados
+            $table->string('status')->default('pending');
+            $table->text('note')->nullable();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); //responsable
+            $table->foreignId('location_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('location_to_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->timestamps();
+        });
 
+        Schema::create('stock_adjustment_product', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedMediumInteger('quantity');
+            $table->unsignedMediumInteger('price')->nullable();
+            $table->unsignedMediumInteger('cost')->nullable();
+            $table->foreignId('stock_adjustment_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
+        });
+
+        // Schema::create('stock_entries', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('status')->default('pending'); //aprobado pendiente rechazado
+        //     $table->string('note')->nullable();
+        //     $table->foreignId('user_id')->constrained()->cascadeOnDelete(); //responsable
+        //     $table->foreignId('location_id')->constrained()->cascadeOnDelete();
         //     $table->timestamps();
         // });
+
+        // Schema::create('stock_entry_product', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->unsignedMediumInteger('quantity');
+        //     $table->unsignedMediumInteger('price')->nullable();
+        //     $table->unsignedMediumInteger('cost');
+        //     $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+        //     $table->foreignId('stock_entry_id')->constrained()->cascadeOnDelete();
+        //     $table->timestamps();
+        // });
+
+        // Schema::create('stoct_transfers', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('status')->default('pending'); //aprobado pendiente rechazado
+        //     $table->string('note');
+        //     $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+        //     $table->foreignId('location_to_id')->constrained()->cascadeOnDelete();
+        //     $table->foreignId('location_from_id')->constrained()->cascadeOnDelete();
+        //     $table->timestamps();
+        // });
+
+        // Schema::create('stoct_transfer_product', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->unsignedMediumInteger('quantity');
+        //     $table->foreignId('stoct_transfer_id')->constrained()->cascadeOnDelete();
+        //     $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+        //     $table->timestamps();
+        // });
+
+
     }
 
     /**
@@ -47,7 +86,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Schema::dropIfExists('stock_adjustments');
         Schema::dropIfExists('stock');
+        Schema::dropIfExists('stock_adjustments');
+        Schema::dropIfExists('stock_adjustment_product');
+        // Schema::dropIfExists('stock_entries');
+        // Schema::dropIfExists('stock_entry_product');
+        // Schema::dropIfExists('stoct_transfers');
+        // Schema::dropIfExists('stoct_transfers_product');
     }
 };

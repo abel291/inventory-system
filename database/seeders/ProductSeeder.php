@@ -19,7 +19,7 @@ class ProductSeeder extends Seeder
     {
         Product::truncate();
 
-        $products_json = collect(Storage::json(env('DB_FAKE_PRODUCTS')))->shuffle()->take(10);
+        $products_json = collect(Storage::json(env('DB_FAKE_PRODUCTS')))->shuffle();
 
         $categories = Category::select('id', 'name')->get()->pluck('id', 'name');
 
@@ -39,7 +39,7 @@ class ProductSeeder extends Seeder
         }
 
 
-        foreach (array_chunk($products_db, 400) as $products_slice_array) {
+        foreach (array_chunk($products_db, 800) as $products_slice_array) {
             Product::insert($products_slice_array);
         }
     }

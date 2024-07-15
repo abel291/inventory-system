@@ -16,43 +16,5 @@ class StockAdjustmentSeeder extends Seeder
      */
     public function run(): void
     {
-        $stock_products = [];
-        StockAdjustment::truncate();
-        $users = User::select('id')->get();
-        foreach (Stock::select('id', 'stock')->get() as $stock) {
-
-            $typeOperaction = fake()->randomElement(StockAdjustmentTypeEnum::cases());
-            // $typeOperaction = fake()->randomElement(StockAdjustmentTypeEnum::cases());
-
-            $adjustment = rand(1, $stock->stock);
-
-            if ($typeOperaction ==  StockAdjustmentTypeEnum::INCREASE) {
-                $final_stock = $adjustment + $stock->stock;
-                $stock->increment('stock', $final_stock);
-            } else {
-                $final_stock = $stock->stock - $adjustment;
-                $stock->decrement('stock', $final_stock);
-            }
-
-            $stock_products[] = [
-                'initial_stock' => $stock->stock,
-                'adjustment' => $adjustment,
-                'final_stock' => $final_stock,
-                'type' => $typeOperaction,
-                'note' => fake()->sentence(),
-                'approved' => rand(1, 0),
-                'status' => 'aprove',
-                'user_id' => $users->random()->id,
-                'stock_id' => $stock->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-        shuffle($stock_products);
-
-
-        foreach (array_chunk($stock_products, 400) as $items_slice) {
-            StockAdjustment::insert($items_slice);
-        }
     }
 }

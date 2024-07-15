@@ -25,13 +25,13 @@ class StockSeeder extends Seeder
         $stock = [];
 
         foreach (Product::select('id', 'price')->get() as $product) {
-            foreach ($locations->random(3)->multiply(rand(2, 5)) as $location) {
-                $quantity = rand(10, 20);
+            foreach ($locations->random(3)->multiply(rand(2, 4)) as $location) {
+                $quantity = rand(1, 4);
                 $stock[] = [
                     'product_id' => $product->id,
                     'location_id' => $location->id,
                     'quantity' => $quantity,
-                    'remaining' => rand(0, $quantity),
+                    'remaining' => $quantity,
                     'cost' => round($product->price * 0.80),
                     'created_at' => now(),
                     'updated_at' => now(),

@@ -2,11 +2,10 @@
 
 namespace App\Providers;
 
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
@@ -21,7 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
     }
 
     /**
@@ -32,13 +30,10 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
         EditAction::configureUsing(function (EditAction $action): void {
             $action->color('info')->icon(false);
-        });
-        CreateAction::configureUsing(function (CreateAction $action): void {
-            $action->icon(false);
-        });
+        }, isImportant: true);
         DeleteAction::configureUsing(function (DeleteAction $action): void {
             $action->icon(false);
-        });
+        }, isImportant: true);
         Table::configureUsing(function (Table $table): void {
             $table->defaultPaginationPageOption(25)->defaultSort('id', 'desc');
             $table->filtersLayout(FiltersLayout::AboveContent);

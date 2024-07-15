@@ -44,7 +44,7 @@ class LocationResource extends Resource
                     ->options(LocationTypeEnum::class)
                     ->required(),
                 Forms\Components\Toggle::make('active')
-                    ->label('Activo')
+                    ->translateLabel()
                     ->required(),
             ]);
     }
@@ -74,7 +74,7 @@ class LocationResource extends Resource
                         return $record->stock->sum('remaining');
                     }),
                 Tables\Columns\IconColumn::make('active')
-                    ->label('Activo')
+                    ->translateLabel()
                     ->boolean(),
 
 
@@ -92,9 +92,9 @@ class LocationResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\Action::make('products')
-                    ->label('Ver Productos')
-                    ->url(fn (Location $record): string => route('filament.admin.resources.locations.products', $record)),
+                // Tables\Actions\Action::make('products')
+                //     ->label('Ver Productos')
+                //     ->url(fn (Location $record): string => route('filament.admin.resources.locations.products', $record)),
 
                 Tables\Actions\EditAction::make()->color('info')->icon(null),
                 Tables\Actions\DeleteAction::make()->icon(null),

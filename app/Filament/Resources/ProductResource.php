@@ -84,7 +84,8 @@ class ProductResource extends Resource
 
                 Forms\Components\Toggle::make('active')
                     ->default(1)
-                    ->required(),
+                    ->required()
+                    ->translateLabel(),
 
             ])->columns(3);
     }
@@ -106,7 +107,7 @@ class ProductResource extends Resource
                     ->money('COP', locale: 'ES')->label('Precio')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('active')
-                    ->label('Activo')
+                    ->translateLabel()
                     ->boolean(),
 
             ])
@@ -117,8 +118,8 @@ class ProductResource extends Resource
             ->filters(self::filterProduct())
             ->actions([
                 // Tables\Actions\ViewAction::make()->icon(false)->label('Ver stock'),
-                Tables\Actions\EditAction::make()->icon(null)->icon(false),
-                Tables\Actions\DeleteAction::make()->icon(false),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
 
             ])
             ->bulkActions([

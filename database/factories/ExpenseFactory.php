@@ -17,7 +17,10 @@ class ExpenseFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'reason' => fake()->sentence(),
+            'amount' => rand(10, 100) * 1000,
+            'note' => fake()->sentence(),
+            'date' => fake()->dateTimeBetween('-30 days', '+30 days')
         ];
     }
 }

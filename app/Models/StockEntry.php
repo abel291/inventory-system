@@ -23,10 +23,10 @@ class StockEntry extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'stock_entry_product')->as('stock')->withPivot([
-            'quantity',
-            'price',
-            'cost'
-        ]);
+        return $this->belongsToMany(Product::class, 'stock_entry_product')
+            ->withPivot([
+                'quantity',
+                'cost'
+            ]);
     }
 }

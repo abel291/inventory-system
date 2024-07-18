@@ -23,26 +23,23 @@ class StockEntrySeeder extends Seeder
     {
 
         Stock::truncate();
-        StockAdjustment::truncate();
-        DB::table('stock_adjustment_product')->truncate();
+        StockEntry::truncate();
+        DB::table('stock_entry_product')->truncate();
 
         $locations = Location::select('id')->get();
         $users = User::select('id')->get();
         $products = Product::select('id', 'price')->inRandomOrder()->get();
-        foreach ($products->multiply(4)->chunk(12) as $products_chunk) {
-            $stockEntry = StockAdjustment::factory()
+        foreach ($products->chunk(12) as $products_chunk) {
+            $stockEntry = StockEntry::factory()
                 ->recycle($locations)
                 ->recycle($users)
-                ->create([
-                    'type' => StockAdjustmentTypeEnum::ENTRY
-                ]);
+                ->create();
 
             $productsEntry = [];
             foreach ($products_chunk as $product) {
                 $quantity = rand(1, 4);
                 $productsEntry[$product->id] = [
                     'quantity' => $quantity,
-                    'price' => $product->price,
                     'cost' => round($product->price * 0.70),
                 ];
             }
@@ -50,13 +47,14 @@ class StockEntrySeeder extends Seeder
         }
 
         $totalStock = [];
-        foreach (StockAdjustment::with('products')->get() as $stockAdjustment) {
-            foreach ($stockAdjustment->products as $key => $product) {
+
+        foreach (StockEntry::with('products')->get() as $stockEntry) {
+            foreach ($stockEntry->products as  $product) {
                 $totalStock[] = [
                     'product_id' => $product->id,
-                    'location_id' => $stockAdjustment->location_id,
-                    'quantity' => $product->stock->quantity,
-                    'price' => $product->stock->price,
+                    'location_id' => $stockEntry->location_id,
+                    'quantity' => $product->pivot->quantity,
+                    'price' => $product->price,
                 ];
             }
         }
@@ -64,14 +62,13 @@ class StockEntrySeeder extends Seeder
         $totalStock = collect($totalStock)->groupBy(function (array $item) {
             return $item['product_id'] . $item['location_id'];
         })->map(function ($item) {
-
             return [
                 ...$item[0],
                 'quantity' => $item->sum('quantity'),
             ];
         })->values()->toArray();
 
-        foreach (array_chunk($totalStock, 1000) as $stock) {
+        foreach (array_chunk($totalStock, 400) as $stock) {
             Stock::insert($stock);
         }
     }

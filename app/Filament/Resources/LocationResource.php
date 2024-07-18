@@ -70,8 +70,8 @@ class LocationResource extends Resource
                     ->label('Total unidades')
                     ->numeric()
                     ->getStateUsing(function (Location $record) {
-                        // dd($record);
-                        return $record->stock->sum('remaining');
+
+                        return $record->stock->sum('quantity');
                     }),
                 Tables\Columns\IconColumn::make('active')
                     ->translateLabel()
@@ -85,7 +85,7 @@ class LocationResource extends Resource
 
             ])
             ->modifyQueryUsing(function (Builder $query) {
-                return $query->with('stock');
+                return $query->with('stock', 'products');
                 // ->where('author_id', auth()->id());
             })
             ->filters([

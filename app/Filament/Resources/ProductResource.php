@@ -138,7 +138,7 @@ class ProductResource extends Resource
                 ->searchable()
                 ->attribute('id')
                 ->label('Producto')
-                ->columnSpan(2),
+                ->columnSpan(3),
             SelectFilter::make('category')
                 ->relationship('category', 'name')
                 ->preload()->label('Categoria'),

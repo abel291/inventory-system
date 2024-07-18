@@ -24,14 +24,11 @@ class Location extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'stock')
-            ->wherePivot('type', 'total')
-            ->wherePivot('remaining', '>', 0)
-            ->withPivot(['quantity', 'remaining', 'price', 'cost']);
+        return $this->belongsToMany(Product::class, 'stock')->withPivot(['quantity', 'price']);
     }
 
     public function stock(): HasMany
     {
-        return $this->hasMany(Stock::class)->where('type', 'total')->where('remaining', '>', 0);
+        return $this->hasMany(Stock::class);
     }
 }

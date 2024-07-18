@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             LocationSeeder::class,
             StockEntrySeeder::class,
-            StockTransferSeeder::class,
+            // StockTransferSeeder::class,
             ContactSeeder::class,
             ExpenseSeeder::class,
 

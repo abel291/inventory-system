@@ -8,6 +8,7 @@ use App\Filament\Resources\StockResource\Pages;
 use App\Models\Location;
 use App\Models\Product;
 use App\Models\Stock;
+use App\Models\StockEntry;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class StockEntryResource extends Resource
 {
-    protected static ?string $model = Stock::class;
+    protected static ?string $model = StockEntry::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-right-end-on-rectangle';
 
@@ -120,9 +121,6 @@ class StockEntryResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')->label('Responsable'),
                 Tables\Columns\TextColumn::make('cost')->numeric()->prefix('$'),
                 Tables\Columns\TextColumn::make('quantity')->label('Entrada'),
-                Tables\Columns\TextColumn::make('remaining')
-                    ->sortable()
-                    ->label('Existencia'),
 
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Creado')

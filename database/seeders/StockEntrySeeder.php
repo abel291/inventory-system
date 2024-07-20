@@ -33,8 +33,8 @@ class StockEntrySeeder extends Seeder
         $users = User::select('id')->get();
         $products = Product::select('id', 'price')->inRandomOrder()->get();
 
-        foreach ($products->chunk(12)->multiply(2) as $products_chunk) {
-            foreach ($locations->random(2) as $location) {
+        foreach ($products->chunk(20)->multiply(3) as $products_chunk) {
+            foreach ($locations->random(3) as $location) {
 
                 $stockEntry = StockEntry::factory()
                     ->create([
@@ -45,7 +45,7 @@ class StockEntrySeeder extends Seeder
                 $productsEntry = [];
 
                 foreach ($products_chunk as $product) {
-                    $quantity = rand(1, 4);
+                    $quantity = fake()->randomElement([6, 12, 24]);
                     $productsEntry[$product->id] = [
                         'quantity' => $quantity,
                         'cost' => round($product->price * 0.70),
@@ -58,7 +58,6 @@ class StockEntrySeeder extends Seeder
 
                 $this->command->info($stockEntry->id);
             }
-
         }
     }
 }

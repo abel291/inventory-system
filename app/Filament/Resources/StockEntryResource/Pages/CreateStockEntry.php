@@ -13,10 +13,7 @@ class CreateStockEntry extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['remaining'] = $data['quantity'];
-        $data['user_id'] = auth()->user()->id;
-        $data['type'] = 'stock';
-
+        $data['user_id'] = auth()->id();
         return $data;
     }
 }

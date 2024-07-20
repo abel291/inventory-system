@@ -11,21 +11,19 @@ use App\Models\Product;
 use App\Models\Stock;
 use App\Models\StockEntry;
 use Filament\Forms;
-use Filament\Forms\Components\Grid;
+
+use Livewire\Component as Livewire;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
-use Filament\Infolists\Infolist;
-use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Actions\Action;
+
 
 use Filament\Tables\Enums\FiltersLayout;
 
@@ -41,116 +39,104 @@ class StockEntryResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $productsWithStock=[];
+
         return $form
             ->schema([
-                // Forms\Components\Select::make('product_id')
-                //     ->label('Producto')
-                //     ->live()
-                //     ->placeholder('Codigo de barra o nombre del producto')
-                //     ->options(Product::all()->pluck('nameBarcodePrice', 'id'))
-                //     ->afterStateUpdated(function (Get $get, Set $set) {
-                //         self::getStockProduct($get, $set);
-                //     })
-                //     ->searchable()
-                //     ->native(false)
-                //     ->required()
-                //     ->columnSpan(2),
 
                 Forms\Components\Select::make('location_id')
-
                     ->label('Ubicacion')
                     ->live()
                     ->required()
-                    ->options(Location::all()->pluck('name', 'id'))
-                    ->afterStateUpdated(function (Get $get, Set $set) {
+                    ->afterStateUpdated(function ($set) {
+                        $set('stockEntryProducts', [
+                            [
+                                'product_id' => null,
+                                'stock' => null,
+                                'quantity' => null,
+                            ]
+                        ]);
+                    })
+                    ->options(Location::all()->pluck('nameType', 'id')),
 
-                        $productsWithStock=Product::where('', $set['location_id'])
-
-                    }),
-
-                Forms\Components\Repeater::make('products')
-                    ->hidden(fn(Get $get): bool => !$get('location_id'))
+                Forms\Components\Repeater::make('stockEntryProducts')
+                    ->hidden(fn (Get $get): bool => !$get('location_id'))
+                    ->relationship()
+                    ->required()
                     ->label('Productos')
                     ->schema([
                         Forms\Components\Select::make('product_id')
                             ->label('Nombre del producto')
                             ->live()
                             ->placeholder('Codigo de barra o nombre del producto')
-                            ->options(Product::all()->pluck('nameBarcodePrice', 'id'))
-                            ->afterStateUpdated(function (Get $get, Set $set) {
-                                self::getStockProduct($get, $set);
+                            ->relationship(
+                                name: 'product',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                    ->with(['locations' => function ($query2) use ($get) {
+                                        $query2->where('locations.id', $get('../../location_id'));
+                                    }])
+                                    ->whereRelation('locations', 'locations.id', $get('../../location_id')),
+                            )
+                            ->optionsLimit(5)
+                            ->getOptionLabelFromRecordUsing(function (Product $record) {
+
+                                return "{$record->nameBarcodePrice}";
                             })
-                            ->searchable()
+                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                            ->searchable(['barcode', 'name', 'reference'])
+                            // ->options(function (Get $get, Livewire $livewire) {
+
+                            //     return Product::whereRelation('locations', 'locations.id', $get('../../location_id'))->get()
+                            //         ->pluck('nameBarcodePrice', 'id');
+                            // })
+                            ->afterStateUpdated(function (Get $get, Set $set, $state) {
+
+                                $stock = Stock::where([
+                                    ['product_id', $state],
+                                    ['location_id', $get('../../location_id')],
+                                ])->first();
+
+                                $set('stock', $stock->quantity);
+                                $set('quantity', null);
+                            })
                             ->native(false)
                             ->required()
                             ->columnSpanFull(),
+
                         Forms\Components\TextInput::make('stock')
                             ->label('Existencia')
                             ->disabled()
                             ->numeric(),
+
                         Forms\Components\TextInput::make('quantity')
                             ->label('Cantidad')
+                            ->maxValue(fn (Get $get) => $get('stock'))
+                            ->required()
                             ->numeric()
-                            ->minValue(1)
+                            ->minValue(1),
+                        Forms\Components\TextInput::make('cost')
+                            ->label('Costo')
+                            ->required()
+                            ->suffix('COP')
+                            ->numeric()
+                            ->minValue(0)
+                    ])
+                    ->addActionLabel('Añadir otro producto')
+                    ->default([
+                        [
+                            'product_id' => null,
+                            'stock' => null,
+                            'quantity' => null,
+                        ]
                     ])
 
                     ->columnSpanFull()
                     ->columns(3),
-
-                // Forms\Components\TextInput::make('cost')
-                //     ->label('Costo')
-                //     ->numeric()
-                //     ->minValue(0)
-                //     ->prefix('$')
-                //     ->required(),
-                // Forms\Components\TextInput::make('quantity')
-                //     ->label('Cantidad Agregada')
-                //     ->live(debounce: 300)
-                //     ->minValue(1)
-
-                //     ->disabled(function (Get $get) {
-                //         return !$get('location_id') || !$get('product_id');
-                //     })
-                //     ->required()
-                //     ->numeric(),
-
-                // Forms\Components\TextInput::make('actual_stock')
-                //     ->label(function (string $operation) {
-
-
-                //         return 'Existencia Actual ';
-                //         // .
-                //         // match ($operation) {
-                //         //     'create' => '(excluyendo esta entrada)',
-                //         //     'edit' => '(incluyendo esta entrada)',
-                //         //     default => '',
-                //         // };
-                //     })
-                //     ->disabled(),
             ])->columns(3);
     }
 
 
-    public static function getStockProduct(Get $get, Set $set)
-    {
 
-        if ($get('location_id') && $get('product_id')) {
-
-            $stock = Stock::where([
-                ['product_id', $get('product_id')],
-                ['location_id', $get('location_id')],
-                ['type', 'total']
-            ])->first();
-
-            if ($stock) {
-                $set('actual_stock', $stock->remaining);
-            } else {
-                $set('actual_stock', 0);
-            }
-            $set('quantity', 0);
-        }
-    }
     public static function table(Table $table): Table
     {
         return $table
@@ -171,15 +157,15 @@ class StockEntryResource extends Resource
             ->filters(self::filterProduct(), layout: FiltersLayout::Dropdown)
 
             ->actions([
-                // Tables\Actions\ViewAction::make()->icon(false)
-                //     ->modalHeading('Informacion de los productos')
-                //     ->infolist([
-                //         TextEntry::make('user.name')->label('Responsable'),
-                //         ViewEntry::make('products')->view('filament.infolists.entries.stock-entry-product-list')
-                //     ]),
-                Tables\Actions\Action::make('products')
-                    ->label('Ver productos')
-                    ->url(fn(StockEntry $record): string => route('filament.admin.resources.stock-entries.products', $record)),
+                Tables\Actions\ViewAction::make()->icon(false)
+                    ->modalHeading('Informacion de los productos')
+                    ->infolist([
+                        TextEntry::make('user.name')->label('Responsable'),
+                        ViewEntry::make('products')->view('filament.infolists.entries.stock-entry-product-list')
+                    ])->label('Ver productos'),
+                // Tables\Actions\Action::make('products')
+                //     ->label('Ver productos')
+                //     ->url(fn (StockEntry $record): string => route('filament.admin.resources.stock-entries.products', $record)),
 
             ])
             ->bulkActions([

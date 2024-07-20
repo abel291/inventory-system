@@ -17,7 +17,7 @@
 }
 
 .fi-btn-color-gray {
-    @apply dark:bg-transparent dark:ring-transparent !important;
+    @apply dark:border dark:border-white/5 dark:bg-transparent dark:ring-transparent !important;
 }
 
 .fi-ta-text,

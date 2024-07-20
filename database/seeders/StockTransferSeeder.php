@@ -40,7 +40,7 @@ class StockTransferSeeder extends Seeder
                 ->inRandomOrder()
                 ->where('location_id', $locationFrom->id)
                 ->where('quantity', '>', 0)
-                ->take(rand(4, 8))
+                ->take(rand(6, 12))
                 ->get();
 
             $productsTranfers = [];

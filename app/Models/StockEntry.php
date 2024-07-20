@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+
 class StockEntry extends Model
 {
     use HasFactory;
@@ -19,6 +20,11 @@ class StockEntry extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function stockEntryProducts(): HasMany
+    {
+        return $this->hasMany(StockEntryProduct::class);
     }
 
     public function products(): BelongsToMany

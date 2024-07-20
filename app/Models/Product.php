@@ -34,17 +34,13 @@ class Product extends Model
         return $this->belongsToMany(Location::class, 'stock')->withPivot(['quantity']);
     }
 
-    public function latestStock()
-    {
-        return $this->hasOne(Stock::class)->latestOfMany();
-    }
 
-    public function stockAdjustments(): BelongsToMany
-    {
-        return $this->belongsToMany(StockAdjustment::class, 'stock_adjustment_product')->as('stock')->withPivot([
-            'quantity',
-            'price',
+    // public function stockAdjustments(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(StockAdjustment::class, 'stock_adjustment_product')->as('stock')->withPivot([
+    //         'quantity',
+    //         'price',
 
-        ]);
-    }
+    //     ]);
+    // }
 }

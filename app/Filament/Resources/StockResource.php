@@ -20,11 +20,11 @@ class StockResource extends Resource
 {
     protected static ?string $model = Stock::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static ?string $label = 'Mercancia';
-    protected static ?string $pluralModelLabel  = 'Mercancia';
-    protected static ?string $navigationGroup  = 'Inventario';
+    protected static ?string $pluralModelLabel = 'Inventario';
+    protected static ?string $navigationGroup = 'Inventario';
 
     public static function form(Form $form): Form
     {
@@ -40,18 +40,13 @@ class StockResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('product.img')->label('Imagen'),
                 Tables\Columns\TextColumn::make('product.name')
-                    ->description(fn (Stock $record): string => $record->product->barcode)
+                    ->description(fn(Stock $record): string => $record->product->barcode)
                     ->wrap()->label('Codigo - Nombre'),
                 Tables\Columns\TextColumn::make('location.name')->label('Ubicacion')->badge(),
-                Tables\Columns\TextColumn::make('cost')->label('Costo')->numeric()->prefix('$'),
                 Tables\Columns\TextColumn::make('product.price')->label('Precio')->numeric()->prefix('$'),
                 // Tables\Columns\TextColumn::make('quantity')->label('Existencia'),
-                Tables\Columns\TextColumn::make('remaining')
+                Tables\Columns\TextColumn::make('quantity')
                     ->sortable()
-                    ->state(function (Stock $record): string {
-                        return $record->quantity . " / " . $record->remaining;
-                    })
-
                     ->label('Existencia'),
 
                 Tables\Columns\TextColumn::make('updated_at')
@@ -60,8 +55,7 @@ class StockResource extends Resource
 
             ])
             ->modifyQueryUsing(function (Builder $query) {
-                return $query->with('location', 'product.category')
-                    ->where('type', 'total');
+                return $query->with('location', 'product.category');
             })
             ->filters([
                 SelectFilter::make('product_id')
@@ -72,7 +66,7 @@ class StockResource extends Resource
                     ->columnSpan(3),
                 SelectFilter::make('location_id')
                     ->options(Location::all()->pluck('name', 'id'))
-                    ->columnSpan(2)
+                    ->columnSpan(1)
                     ->preload()->label('Ubicacion')
             ])
 

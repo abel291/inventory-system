@@ -28,19 +28,24 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::unguard();
+
         EditAction::configureUsing(function (EditAction $action): void {
             $action->color('info')->icon(false);
         }, isImportant: true);
+
         DeleteAction::configureUsing(function (DeleteAction $action): void {
             $action->icon(false);
         }, isImportant: true);
+
         Table::configureUsing(function (Table $table): void {
             $table->defaultPaginationPageOption(25)->defaultSort('id', 'desc');
             $table->filtersLayout(FiltersLayout::AboveContent);
         });
+
         Select::configureUsing(function (Select $component): void {
             $component->native(false);
         });
+
         SelectFilter::configureUsing(function (SelectFilter $component): void {
             $component->native(false);
         });

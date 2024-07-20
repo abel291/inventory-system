@@ -26,6 +26,6 @@ class StockTransfer extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'stoct_transfer_product')->as('stock')->withPivot([]);
+        return $this->belongsToMany(Product::class, 'stock_transfer_product')->withPivot(['quantity']);
     }
 }

@@ -20,14 +20,14 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
     public static ?string $label = 'Producto';
-    protected static ?string $pluralModelLabel  = 'Productos';
-    protected static ?string $navigationGroup  = 'Inventario';
+    protected static ?string $pluralModelLabel = 'Productos';
+    protected static ?string $navigationGroup = 'Inventario';
 
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'barcode', 'reference'];
     }
-    protected static ?string $recordTitleAttribute = 'nameBarcode';
+    protected static ?string $recordTitleAttribute = 'name';
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
@@ -48,7 +48,6 @@ class ProductResource extends Resource
                     ->numeric()
                     ->label('Precio')
                     ->prefix('$'),
-
 
                 Forms\Components\TextInput::make('barcode')
                     ->required()
@@ -97,15 +96,13 @@ class ProductResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('img')->label('Imagen')->height(56),
                 Tables\Columns\TextColumn::make('name')->translateLabel()->wrap()
-                    ->description(fn (Product $record): string => $record->barcode),
+                    ->description(fn(Product $record): string => $record->barcode),
 
                 Tables\Columns\TextColumn::make('locations')
-                    ->formatStateUsing(fn ($state): string => $state->nameType)
+                    ->formatStateUsing(fn($state): string => $state->nameType)
                     ->badge()->label('Ubicaciones'),
 
-                Tables\Columns\TextColumn::make('price')
-                    ->money('COP', locale: 'ES')->label('Precio')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('price')->money('COP', locale: 'ES')->label('Precio')->sortable(),
                 Tables\Columns\IconColumn::make('active')
                     ->translateLabel()
                     ->boolean(),
@@ -138,7 +135,7 @@ class ProductResource extends Resource
                 ->searchable()
                 ->attribute('id')
                 ->label('Producto')
-                ->columnSpan(3),
+                ->columnSpan(2),
             SelectFilter::make('category')
                 ->relationship('category', 'name')
                 ->preload()->label('Categoria'),

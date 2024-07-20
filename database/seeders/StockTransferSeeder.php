@@ -6,9 +6,12 @@ use App\Enums\StockAdjustmentTypeEnum;
 use App\Models\Location;
 use App\Models\Stock;
 use App\Models\StockAdjustment;
+use App\Models\StockTransfer;
 use App\Models\User;
+use App\Services\StockService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class StockTransferSeeder extends Seeder
 {
@@ -17,35 +20,42 @@ class StockTransferSeeder extends Seeder
      */
     public function run(): void
     {
+        StockTransfer::truncate();
+        DB::table("stock_transfer_product")->truncate();
+
         $locations = Location::get();
-        StockAdjustment::where('type', StockAdjustmentTypeEnum::TRANSFER)->truncate();
         $users = User::get();
-        foreach ($locations as $key => $location) {
+        foreach ($locations->multiply(10) as $locationFrom) {
 
-            $locationTo = $locations->whereNot('id', $location->id)->random()->id;
+            $locationTo = $locations->where('id', '!=', $locationFrom->id)->random();
 
-            $stockTransfer = StockAdjustment::factory()
+            $stockTransfer = StockTransfer::factory()
                 ->recycle($users)
                 ->create([
-                    'type' => StockAdjustmentTypeEnum::TRANSFER,
-                    'location_id' => $location->id,
-                    'location_to_id' => $locationTo
+                    'location_from_id' => $locationFrom->id,
+                    'location_to_id' => $locationTo->id
                 ]);
 
-            $stock_selected = Stock::with('product', 'location')
+            $stock_selected = Stock::with('product')
                 ->inRandomOrder()
-                ->where('location_id', $location->id)
-                ->take(5)
+                ->where('location_id', $locationFrom->id)
+                ->where('quantity', '>', 0)
+                ->take(rand(4, 8))
                 ->get();
 
             $productsTranfers = [];
             foreach ($stock_selected as $item) {
-                $productsTranfers[] = [
+                $productsTranfers[$item->product_id] = [
                     'quantity' => rand(1, $item->quantity),
                 ];
             }
 
+
             $stockTransfer->products()->attach($productsTranfers);
+
+            StockService::stockTransfer($stockTransfer);
+
+            $this->command->info($stockTransfer->id);
         }
     }
 }

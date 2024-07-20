@@ -24,7 +24,7 @@ class Location extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'stock')->withPivot(['quantity', 'price']);
+        return $this->belongsToMany(Product::class, 'stock')->withPivot(['quantity']);
     }
 
     public function stock(): HasMany

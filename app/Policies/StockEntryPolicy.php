@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Stock;
+use App\Models\StockEntry;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class StockPolicy
+class StockEntryPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class StockPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_stock');
+        return $user->can('view_any_stock::entry');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Stock $stock): bool
+    public function view(User $user, StockEntry $stockEntry): bool
     {
-        return $user->can('view_stock');
+        return $user->can('view_stock::entry');
     }
 
     /**
@@ -31,23 +31,23 @@ class StockPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_stock');
+        return $user->can('create_stock::entry');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Stock $stock): bool
+    public function update(User $user, StockEntry $stockEntry): bool
     {
-        return $user->can('update_stock');
+        return $user->can('update_stock::entry');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Stock $stock): bool
+    public function delete(User $user, StockEntry $stockEntry): bool
     {
-        return $user->can('delete_stock');
+        return $user->can('delete_stock::entry');
     }
 
     /**
@@ -55,15 +55,15 @@ class StockPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_stock');
+        return $user->can('delete_any_stock::entry');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Stock $stock): bool
+    public function forceDelete(User $user, StockEntry $stockEntry): bool
     {
-        return $user->can('force_delete_stock');
+        return $user->can('force_delete_stock::entry');
     }
 
     /**
@@ -71,15 +71,15 @@ class StockPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_stock');
+        return $user->can('force_delete_any_stock::entry');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Stock $stock): bool
+    public function restore(User $user, StockEntry $stockEntry): bool
     {
-        return $user->can('restore_stock');
+        return $user->can('restore_stock::entry');
     }
 
     /**
@@ -87,15 +87,15 @@ class StockPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_stock');
+        return $user->can('restore_any_stock::entry');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Stock $stock): bool
+    public function replicate(User $user, StockEntry $stockEntry): bool
     {
-        return $user->can('replicate_stock');
+        return $user->can('replicate_stock::entry');
     }
 
     /**
@@ -103,6 +103,6 @@ class StockPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_stock');
+        return $user->can('reorder_stock::entry');
     }
 }

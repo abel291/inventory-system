@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\StockStatuEnum;
 use App\Filament\Resources\StockEntryResource\Pages\CreateStockEntry;
 use App\Filament\Resources\StockEntryResource\Pages\ListStockEntry;
 use App\Filament\Resources\StockEntryResource\Pages\ManageStockEntryProducts;
+use App\Filament\Resources\StockEntryResource\Pages\ViewStockEntry;
 use App\Filament\Resources\StockResource\Pages;
 use App\Models\Location;
 use App\Models\Product;
@@ -16,18 +18,23 @@ use Livewire\Component as Livewire;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 
 use Filament\Tables\Enums\FiltersLayout;
+use Illuminate\Support\Collection;
 
-class StockEntryResource extends Resource
+class StockEntryResource extends Resource  implements HasShieldPermissions
 {
     protected static ?string $model = StockEntry::class;
 
@@ -36,6 +43,19 @@ class StockEntryResource extends Resource
     public static ?string $label = 'Entrada mercancia';
     protected static ?string $pluralModelLabel = 'Entrada mercancia';
     protected static ?string $navigationGroup = 'Inventario';
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'change_status'
+        ];
+    }
 
     public static function form(Form $form): Form
     {
@@ -57,6 +77,7 @@ class StockEntryResource extends Resource
                         ]);
                     })
                     ->options(Location::all()->pluck('nameType', 'id')),
+                Forms\Components\Grid::make()->columns(2),
 
                 Forms\Components\Repeater::make('stockEntryProducts')
                     ->hidden(fn (Get $get): bool => !$get('location_id'))
@@ -71,32 +92,28 @@ class StockEntryResource extends Resource
                             ->relationship(
                                 name: 'product',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
-                                    ->with(['locations' => function ($query2) use ($get) {
-                                        $query2->where('locations.id', $get('../../location_id'));
-                                    }])
-                                    ->whereRelation('locations', 'locations.id', $get('../../location_id')),
+                                // modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                //     ->with('locations')
+                                //     ->whereHas('locations', function (Builder $query) use ($get) {
+                                //         $query->where('location_id', $get('../../location_id'));
+                                //     }),
                             )
-                            ->optionsLimit(5)
+                            ->searchable(['name', 'barcode'])
                             ->getOptionLabelFromRecordUsing(function (Product $record) {
-
                                 return "{$record->nameBarcodePrice}";
                             })
                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                            ->searchable(['barcode', 'name', 'reference'])
-                            // ->options(function (Get $get, Livewire $livewire) {
+                            // ->preload()
+                            // ->options(Product::select('id', 'name', 'barcode', 'price')->get()->pluck('nameBarcodePrice', 'id'))
 
-                            //     return Product::whereRelation('locations', 'locations.id', $get('../../location_id'))->get()
-                            //         ->pluck('nameBarcodePrice', 'id');
-                            // })
+                            // ->searchable()
                             ->afterStateUpdated(function (Get $get, Set $set, $state) {
-
                                 $stock = Stock::where([
                                     ['product_id', $state],
                                     ['location_id', $get('../../location_id')],
                                 ])->first();
 
-                                $set('stock', $stock->quantity);
+                                $set('stock', $stock ? $stock->quantity : 0);
                                 $set('quantity', null);
                             })
                             ->native(false)
@@ -110,15 +127,16 @@ class StockEntryResource extends Resource
 
                         Forms\Components\TextInput::make('quantity')
                             ->label('Cantidad')
-                            ->maxValue(fn (Get $get) => $get('stock'))
+                            ->default(1)
                             ->required()
                             ->numeric()
                             ->minValue(1),
                         Forms\Components\TextInput::make('cost')
                             ->label('Costo')
                             ->required()
-                            ->suffix('COP')
+                            ->prefix('$')
                             ->numeric()
+                            ->required()
                             ->minValue(0)
                     ])
                     ->addActionLabel('Añadir otro producto')
@@ -135,15 +153,17 @@ class StockEntryResource extends Resource
             ])->columns(3);
     }
 
-
-
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')->label('Responsable'),
                 Tables\Columns\TextColumn::make('location.nameType')->label('Ubicacion')->badge(),
+                Tables\Columns\TextColumn::make('status')->label('Estado')->badge(),
                 Tables\Columns\TextColumn::make('products_count')->counts('products')->label('Productos'),
+                Tables\Columns\TextColumn::make('products_sum_stock_entry_productcost')->sum('products', 'stock_entry_product.cost')
+                    ->money()
+                    ->label('Coste Total'),
 
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Creado')
@@ -154,18 +174,14 @@ class StockEntryResource extends Resource
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->with('location', 'products', 'user');
             })
-            ->filters(self::filterProduct(), layout: FiltersLayout::Dropdown)
+            ->filters(
+                [
+                    // ...self::filterProduct()
+                ]
+            )
 
             ->actions([
-                Tables\Actions\ViewAction::make()->icon(false)
-                    ->modalHeading('Informacion de los productos')
-                    ->infolist([
-                        TextEntry::make('user.name')->label('Responsable'),
-                        ViewEntry::make('products')->view('filament.infolists.entries.stock-entry-product-list')
-                    ])->label('Ver productos'),
-                // Tables\Actions\Action::make('products')
-                //     ->label('Ver productos')
-                //     ->url(fn (StockEntry $record): string => route('filament.admin.resources.stock-entries.products', $record)),
+                Tables\Actions\ViewAction::make()->label('Ver productos'),
 
             ])
             ->bulkActions([
@@ -173,12 +189,10 @@ class StockEntryResource extends Resource
                     // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->searchPlaceholder('Codigo de barra o nombre del producto')
-            // ->description('Desde aqui puede ver el historial de ingreso de mercancia a las diferentes Ubicaciones')
-            ->defaultSort('id', 'desc');
+            ->searchable()
+
+            ->searchPlaceholder('Codigo de barra o nombre del producto');
     }
-
-
 
     public static function filterProduct()
     {
@@ -199,21 +213,13 @@ class StockEntryResource extends Resource
         ];
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-
-
     public static function getPages(): array
     {
         return [
             'index' => ListStockEntry::route('/'),
             'create' => CreateStockEntry::route('/create'),
-            // 'edit' => Pages\EditStock::route('/{record}/edit'),
+            'create' => CreateStockEntry::route('/create'),
+            'view' => ViewStockEntry::route('/{record}'),
             'products' => ManageStockEntryProducts::route('/{record}/products'),
         ];
     }

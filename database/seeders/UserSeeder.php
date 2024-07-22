@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -17,6 +18,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         Role::truncate();
+        DB::table('role_has_permissions')->truncate();
         Permission::truncate();
         User::truncate();
 
@@ -28,10 +30,14 @@ class UserSeeder extends Seeder
 
         Artisan::call('shield:super-admin', ['--user' => $user_admin->id]);
 
-        // $user_admin->assignRole('super_admin');
 
+        $role_cachier = Role::create(['name' => 'cashier']); //cajera
 
-        Role::create(['name' => 'cashier']); //cajera
+        $permissionStockEntry = Permission::where('name', 'like', '%stock::entry%')
+            ->where('name', '!=', 'change_status_stock::entry')->get();
+
+        $role_cachier->givePermissionTo($permissionStockEntry);
+
 
         $user_regular = User::factory()->create([
             'email' => 'user@user2.com',

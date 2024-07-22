@@ -55,7 +55,7 @@ class SalePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_sale');
+        return $user->can('{{ DeleteAny }}');
     }
 
     /**
@@ -63,7 +63,7 @@ class SalePolicy
      */
     public function forceDelete(User $user, Sale $sale): bool
     {
-        return $user->can('force_delete_sale');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class SalePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_sale');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class SalePolicy
      */
     public function restore(User $user, Sale $sale): bool
     {
-        return $user->can('restore_sale');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class SalePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_sale');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class SalePolicy
      */
     public function replicate(User $user, Sale $sale): bool
     {
-        return $user->can('replicate_sale');
+        return $user->can('{{ Replicate }}');
     }
 
     /**

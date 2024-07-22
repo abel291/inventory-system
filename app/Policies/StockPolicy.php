@@ -55,7 +55,7 @@ class StockPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_stock');
+        return $user->can('{{ DeleteAny }}');
     }
 
     /**
@@ -63,7 +63,7 @@ class StockPolicy
      */
     public function forceDelete(User $user, Stock $stock): bool
     {
-        return $user->can('force_delete_stock');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class StockPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_stock');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class StockPolicy
      */
     public function restore(User $user, Stock $stock): bool
     {
-        return $user->can('restore_stock');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class StockPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_stock');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class StockPolicy
      */
     public function replicate(User $user, Stock $stock): bool
     {
-        return $user->can('replicate_stock');
+        return $user->can('{{ Replicate }}');
     }
 
     /**

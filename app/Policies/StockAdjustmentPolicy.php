@@ -55,7 +55,7 @@ class StockAdjustmentPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_stock::adjustment');
+        return $user->can('{{ DeleteAny }}');
     }
 
     /**
@@ -63,7 +63,7 @@ class StockAdjustmentPolicy
      */
     public function forceDelete(User $user, StockAdjustment $stockAdjustment): bool
     {
-        return $user->can('force_delete_stock::adjustment');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class StockAdjustmentPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_stock::adjustment');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class StockAdjustmentPolicy
      */
     public function restore(User $user, StockAdjustment $stockAdjustment): bool
     {
-        return $user->can('restore_stock::adjustment');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class StockAdjustmentPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_stock::adjustment');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class StockAdjustmentPolicy
      */
     public function replicate(User $user, StockAdjustment $stockAdjustment): bool
     {
-        return $user->can('replicate_stock::adjustment');
+        return $user->can('{{ Replicate }}');
     }
 
     /**

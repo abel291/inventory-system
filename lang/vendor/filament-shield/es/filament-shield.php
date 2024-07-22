@@ -76,5 +76,6 @@ return [
         'reorder' => 'Reordenar',
         'restore_any' => 'Restaurar varios registros',
         'replicate' => 'Replicar',
+        'change_status' => 'Cambiar estado' //StockEntry
     ],
 ];

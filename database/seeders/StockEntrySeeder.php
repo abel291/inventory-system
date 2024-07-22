@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\StockAdjustmentTypeEnum;
+use App\Enums\StockStatuEnum;
 use App\Models\Location;
 use App\Models\Product;
 use App\Models\StockEntryProduct;

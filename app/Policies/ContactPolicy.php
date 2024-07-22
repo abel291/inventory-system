@@ -55,7 +55,7 @@ class ContactPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_provider');
+        return $user->can('{{ DeleteAny }}');
     }
 
     /**
@@ -63,7 +63,7 @@ class ContactPolicy
      */
     public function forceDelete(User $user, Contact $contact): bool
     {
-        return $user->can('force_delete_provider');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class ContactPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_provider');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class ContactPolicy
      */
     public function restore(User $user, Contact $contact): bool
     {
-        return $user->can('restore_provider');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class ContactPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_provider');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class ContactPolicy
      */
     public function replicate(User $user, Contact $contact): bool
     {
-        return $user->can('replicate_provider');
+        return $user->can('{{ Replicate }}');
     }
 
     /**

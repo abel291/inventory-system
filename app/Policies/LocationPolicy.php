@@ -55,7 +55,7 @@ class LocationPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_location');
+        return $user->can('{{ DeleteAny }}');
     }
 
     /**
@@ -63,7 +63,7 @@ class LocationPolicy
      */
     public function forceDelete(User $user, Location $location): bool
     {
-        return $user->can('force_delete_location');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class LocationPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_location');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class LocationPolicy
      */
     public function restore(User $user, Location $location): bool
     {
-        return $user->can('restore_location');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class LocationPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_location');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class LocationPolicy
      */
     public function replicate(User $user, Location $location): bool
     {
-        return $user->can('replicate_location');
+        return $user->can('{{ Replicate }}');
     }
 
     /**

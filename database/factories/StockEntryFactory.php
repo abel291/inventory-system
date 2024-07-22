@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\StockStatuEnum;
 use App\Models\Location;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -18,8 +19,10 @@ class StockEntryFactory extends Factory
      */
     public function definition(): array
     {
+        $status = fake()->randomElement(StockStatuEnum::cases());
         return [
-            'status' => 'approved',
+            'status' => $status,
+            'status_at' => $status != StockStatuEnum::PENDING ? now() : null,
             'note' => fake()->randomElement([null, fake()->sentence()]),
             'user_id' => User::factory(),
             'location_id' => Location::factory(),

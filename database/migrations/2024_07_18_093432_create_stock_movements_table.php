@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -13,10 +14,14 @@ return new class extends Migration {
         Schema::create('stock_movements', function (Blueprint $table) {
             $table->id();
             $table->string('type')->index(); // venta - traslado - devoluciones
-            $table->string('movement_type')->index();// addicion sustraccion
+
+            $table->string('operation')->index(); // addicion sustraccion
             $table->unsignedMediumInteger('quantity');
+            $table->unsignedMediumInteger('old_quantity')->default(0);
             $table->foreignId('location_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+
+
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Enums\StockMovementOperationEnum;
 use App\Models\Stock;
 use App\Models\StockMovement;
 use Illuminate\Support\Facades\Artisan;
@@ -13,15 +14,15 @@ class StockMovementObserver
      */
     public function created(StockMovement $stockMovement): void
     {
-
+        // return;
         $stock = Stock::firstOrNew([
             'location_id' => $stockMovement->location_id,
             'product_id' => $stockMovement->product_id,
         ]);
 
-        match ($stockMovement->type) {
-            'addition' => $stock->quantity += $stockMovement->quantity,
-            'subtraction' => $stock->quantity -= $stockMovement->quantity,
+        match ($stockMovement->operation) {
+            StockMovementOperationEnum::ADDITION => $stock->quantity += $stockMovement->quantity,
+            StockMovementOperationEnum::SUBTRACTION => $stockMovement->quantity,
         };
         $stock->save();
         // $stock->quantity = $stock->quantity + $stockMovement->quantity

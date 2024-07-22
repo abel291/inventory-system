@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -22,6 +23,7 @@ return new class extends Migration {
         Schema::create('stock_entries', function (Blueprint $table) {
             $table->id();
             $table->string('status')->default('pending'); //aprobado pendiente rechazado
+            $table->timestamp('status_at')->nullable(); // cambio de status
             $table->string('note')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); //responsable
             $table->foreignId('location_id')->constrained()->cascadeOnDelete();
@@ -64,9 +66,7 @@ return new class extends Migration {
             $table->foreignId('location_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
-        });
-
-    }
+        });}
 
     /**
      * Reverse the migrations.

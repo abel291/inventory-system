@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\StockMovementOperationEnum;
+use App\Enums\StockMovementTypeEnum;
+use App\Enums\StockStatuEnum;
 use App\Models\Stock;
 use App\Models\StockEntry;
 use App\Models\StockMovement;
@@ -12,12 +15,18 @@ class StockService
 {
     public static function stockEntryAddition(StockEntry $stockEntry)
     {
+
+        if ($stockEntry->status != StockStatuEnum::ACCEPTED) {
+            return;
+        };
+
         foreach ($stockEntry->products as $product) {
+
             StockMovement::create([
                 'location_id' => $stockEntry->location_id,
                 'product_id' => $product->id,
-                'type' => 'addition',//subtraction
-                'movement_type' => 'entry',
+                'type' => StockMovementTypeEnum::ENTRY,
+                'operation' => StockMovementOperationEnum::ADDITION,
                 'quantity' => $product->pivot->quantity,
             ]);
         }
@@ -30,18 +39,17 @@ class StockService
             StockMovement::create([
                 'location_id' => $stockTransfer->location_from_id,
                 'product_id' => $product->id,
-                'type' => 'subtraction',
-                'movement_type' => 'transfer',
+                'type' => StockMovementTypeEnum::TRANSFER,
+                'operation' => StockMovementOperationEnum::SUBTRACTION,
                 'quantity' => $product->pivot->quantity,
             ]);
             StockMovement::create([
                 'location_id' => $stockTransfer->location_to_id,
                 'product_id' => $product->id,
-                'type' => 'addition',
-                'movement_type' => 'transfer',
+                'type' => StockMovementTypeEnum::TRANSFER,
+                'operation' => StockMovementOperationEnum::ADDITION,
                 'quantity' => $product->pivot->quantity,
             ]);
-
         }
     }
 }

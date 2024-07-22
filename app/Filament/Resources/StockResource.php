@@ -7,14 +7,18 @@ use App\Filament\Resources\StockResource\RelationManagers;
 use App\Models\Location;
 use App\Models\Product;
 use App\Models\Stock;
+use BladeUI\Icons\Components\Icon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Livewire\Attributes\Layout;
 
 class StockResource extends Resource
 {
@@ -40,7 +44,8 @@ class StockResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('product.img')->label('Imagen'),
                 Tables\Columns\TextColumn::make('product.name')
-                    ->description(fn(Stock $record): string => $record->product->barcode)
+                    ->searchable(['barcode', 'name'])
+                    ->description(fn (Stock $record): string => $record->product->barcode)
                     ->wrap()->label('Codigo - Nombre'),
                 Tables\Columns\TextColumn::make('location.name')->label('Ubicacion')->badge(),
                 Tables\Columns\TextColumn::make('product.price')->label('Precio')->numeric()->prefix('$'),
@@ -51,26 +56,21 @@ class StockResource extends Resource
 
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Ultima Modificacion')
-                    ->SINCE()
+                    ->since(),
 
             ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->with('location', 'product.category');
             })
             ->filters([
-                SelectFilter::make('product_id')
-                    ->options(Product::all()->pluck('nameBarcode', 'id'))
-                    ->optionsLimit(12)
-                    ->label('Producto')
-                    ->searchable()
-                    ->columnSpan(3),
+
                 SelectFilter::make('location_id')
                     ->options(Location::all()->pluck('name', 'id'))
                     ->columnSpan(1)
                     ->preload()->label('Ubicacion')
-            ])
-
-            ->searchPlaceholder('Codigo de barra o nombre del producto')
+            ], layout: FiltersLayout::Dropdown)
+            ->striped()
+            ->searchPlaceholder('Codigo o nombre del producto')
             ->defaultSort('id', 'desc');
     }
 

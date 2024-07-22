@@ -31,16 +31,6 @@ class Product extends Model
 
     public function locations(): BelongsToMany
     {
-        return $this->belongsToMany(Location::class, 'stock')->withPivot(['quantity']);
+        return $this->belongsToMany(Location::class, 'stock')->distinct('location_id')->withPivot(['quantity']);
     }
-
-
-    // public function stockAdjustments(): BelongsToMany
-    // {
-    //     return $this->belongsToMany(StockAdjustment::class, 'stock_adjustment_product')->as('stock')->withPivot([
-    //         'quantity',
-    //         'price',
-
-    //     ]);
-    // }
 }

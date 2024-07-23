@@ -43,9 +43,10 @@ class StockResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('product.img')->label('Imagen'),
+                Tables\Columns\ImageColumn::make('product.img')->label('Imagen'),
                 Tables\Columns\TextColumn::make('product.name')
                     ->searchable(['barcode', 'name'])
-                    ->description(fn (Stock $record): string => $record->product->barcode)
+                    ->description(fn(Stock $record): string => $record->product->barcode)
                     ->wrap()->label('Codigo - Nombre'),
                 Tables\Columns\TextColumn::make('location.name')->label('Ubicacion')->badge(),
                 Tables\Columns\TextColumn::make('product.price')->label('Precio')->numeric()->prefix('$'),
@@ -68,7 +69,7 @@ class StockResource extends Resource
                     ->options(Location::all()->pluck('name', 'id'))
                     ->columnSpan(1)
                     ->preload()->label('Ubicacion')
-            ], layout: FiltersLayout::Dropdown)
+            ])
             ->striped()
             ->searchPlaceholder('Codigo o nombre del producto')
             ->defaultSort('id', 'desc');

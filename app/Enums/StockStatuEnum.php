@@ -9,8 +9,8 @@ use Filament\Support\Contracts\HasLabel;
 enum StockStatuEnum: string implements HasLabel, HasColor, HasIcon
 {
     case PENDING = 'pending';
-    case ACCEPTED  = 'accepted';
-    case REJECTED  = 'rejected';
+    case ACCEPTED = 'accepted';
+    case REJECTED = 'rejected';
 
     public function getLabel(): ?string
     {
@@ -21,7 +21,7 @@ enum StockStatuEnum: string implements HasLabel, HasColor, HasIcon
         };
     }
 
-    public function getColor(): string | array | null
+    public function getColor(): string|array|null
     {
         return match ($this) {
             self::PENDING => 'warning',
@@ -33,9 +33,9 @@ enum StockStatuEnum: string implements HasLabel, HasColor, HasIcon
     public function getIcon(): string
     {
         return match ($this) {
-            self::PENDING => 'heroicon-m-arrow-path',
-            self::ACCEPTED => 'heroicon-m-check',
-            self::REJECTED => 'heroicon-m-x-mark',
+            self::PENDING => 'heroicon-s-arrow-path',
+            self::ACCEPTED => 'heroicon-s-check-circle',
+            self::REJECTED => 'heroicon-m-x-circle',
         };
     }
 }

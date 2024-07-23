@@ -32,6 +32,7 @@ class ProductSeeder extends Seeder
                 'name' => $product['name'],
                 'img' => $product['img'],
                 'price' => $price,
+                'price_wholesale' => round($price * 0.90),
                 'created_at' => now(),
                 'updated_at' => now(),
                 'category_id' => $categories[$product['category']],

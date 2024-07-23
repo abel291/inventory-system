@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Location extends Model
 {
@@ -19,7 +20,7 @@ class Location extends Model
 
     protected function getNameTypeAttribute()
     {
-        return $this->type->getLabel() . " | " . $this->name;
+        return $this->type->getLabel() . " - " . $this->name;
     }
 
     public function products(): BelongsToMany
@@ -30,5 +31,10 @@ class Location extends Model
     public function stock(): HasMany
     {
         return $this->hasMany(Stock::class);
+    }
+
+    public function scopeActive(Builder $query): void
+    {
+        $query->where('active', 1);
     }
 }

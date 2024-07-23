@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -19,8 +18,8 @@ return new class extends Migration
             $table->text('description_min')->nullable();
             $table->string('img')->nullable();
             $table->unsignedInteger('price')->default(0);
+            $table->unsignedInteger('price_wholesale')->default(0);
             $table->unsignedTinyInteger('discount')->default(0);
-            // $table->unsignedInteger('cost')->nullable();
             $table->unsignedMediumInteger('security_stock')->default(5);
             $table->unsignedSmallInteger('max_quantity')->nullable();
             $table->unsignedSmallInteger('min_quantity')->nullable();

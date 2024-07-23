@@ -9,7 +9,6 @@ use App\Models\StockAdjustment;
 use App\Models\StockTransfer;
 use App\Models\User;
 use App\Services\StockService;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -30,10 +29,11 @@ class StockTransferSeeder extends Seeder
             $locationTo = $locations->where('id', '!=', $locationFrom->id)->random();
 
             $stockTransfer = StockTransfer::factory()
-                ->recycle($users)
                 ->create([
                     'location_from_id' => $locationFrom->id,
-                    'location_to_id' => $locationTo->id
+                    'location_to_id' => $locationTo->id,
+                    'user_approve_id' => $users->random()->id,
+                    'user_request_id' => $users->random()->id
                 ]);
 
             $stock_selected = Stock::with('product')

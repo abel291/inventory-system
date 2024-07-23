@@ -22,10 +22,9 @@ class StockMovementObserver
 
         match ($stockMovement->operation) {
             StockMovementOperationEnum::ADDITION => $stock->quantity += $stockMovement->quantity,
-            StockMovementOperationEnum::SUBTRACTION => $stockMovement->quantity,
+            StockMovementOperationEnum::SUBTRACTION => $stock->quantity -= $stockMovement->quantity
         };
         $stock->save();
-        // $stock->quantity = $stock->quantity + $stockMovement->quantity
     }
 
     /**

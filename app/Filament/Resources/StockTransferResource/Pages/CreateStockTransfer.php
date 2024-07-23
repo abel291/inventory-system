@@ -9,4 +9,10 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateStockTransfer extends CreateRecord
 {
     protected static string $resource = StockTransferResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['user_request_id'] = auth()->id();
+        return $data;
+    }
 }

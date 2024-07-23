@@ -34,7 +34,7 @@ use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Support\Collection;
 
-class StockEntryResource extends Resource  implements HasShieldPermissions
+class StockEntryResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = StockEntry::class;
 
@@ -80,7 +80,7 @@ class StockEntryResource extends Resource  implements HasShieldPermissions
                 Forms\Components\Grid::make()->columns(2),
 
                 Forms\Components\Repeater::make('stockEntryProducts')
-                    ->hidden(fn (Get $get): bool => !$get('location_id'))
+                    ->hidden(fn(Get $get): bool => !$get('location_id'))
                     ->relationship()
                     ->required()
                     ->label('Productos')
@@ -176,7 +176,9 @@ class StockEntryResource extends Resource  implements HasShieldPermissions
             })
             ->filters(
                 [
-                    // ...self::filterProduct()
+                    SelectFilter::make('location_id')
+                        ->options(Location::all()->pluck('name', 'id'))
+                        ->preload()->label('Ubicacion')
                 ]
             )
 
@@ -207,9 +209,7 @@ class StockEntryResource extends Resource  implements HasShieldPermissions
             //     ->relationship('products.category', 'name')
             //     ->preload()->label('Categoria'),
 
-            SelectFilter::make('location_id')
-                ->options(Location::all()->pluck('name', 'id'))
-                ->preload()->label('Ubicacion')
+
         ];
     }
 
@@ -217,7 +217,6 @@ class StockEntryResource extends Resource  implements HasShieldPermissions
     {
         return [
             'index' => ListStockEntry::route('/'),
-            'create' => CreateStockEntry::route('/create'),
             'create' => CreateStockEntry::route('/create'),
             'view' => ViewStockEntry::route('/{record}'),
             'products' => ManageStockEntryProducts::route('/{record}/products'),

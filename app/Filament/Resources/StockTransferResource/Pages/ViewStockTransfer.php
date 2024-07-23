@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\StockEntryResource\Pages;
+namespace App\Filament\Resources\StockTransferResource\Pages;
 
 use App\Enums\StockStatuEnum;
-use App\Filament\Resources\StockEntryResource;
+use App\Filament\Resources\StockTransferResource;
 use App\Models\StockEntry;
+use App\Models\StockTransfer;
 use App\Services\StockService;
 use Filament\Actions;
+
 use Filament\Infolists\Components\Actions as ComponentsActions;
 use Filament\Infolists\Components\Actions\Action;
+use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
@@ -18,13 +21,13 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Enums\Alignment;
 
-class ViewStockEntry extends ViewRecord
+class ViewStockTransfer extends ViewRecord
 {
-    protected static string $resource = StockEntryResource::class;
+    protected static string $resource = StockTransferResource::class;
 
     public function getTitle(): string
     {
-        return 'Entrada de mercancia ' . $this->record->created_at->format('M j, Y H:i');
+        return "Traslado {$this->record->locationTo->name} -> {$this->record->locationFrom->name}";
     }
 
     public function infolist(Infolist $infolist): Infolist
@@ -41,19 +44,19 @@ class ViewStockEntry extends ViewRecord
                         ->label('Aceptar mercancia')
                         ->requiresConfirmation()
                         ->modalIcon('heroicon-o-check')
-                        ->action(function (StockEntry $record) {
+                        ->action(function (StockTransfer $record) {
                             $record->status = StockStatuEnum::ACCEPTED;
                             $record->status_at = now();
                             $record->save();
 
-                            StockService::stockEntryAddition($record);
+                            StockService::stockTransfer($record);
+
                             Notification::make()
                                 ->title('La mercancia fue ' . strtolower($record->status->getLabel()))
                                 ->success()
                                 ->send();
                         }),
                     Action::make('status-rejected')
-
                         ->color('danger')
                         ->icon('heroicon-m-x-circle')
                         ->visible(fn($record) => ($record->status == StockStatuEnum::PENDING && $userCanChangeStatus))
@@ -73,14 +76,19 @@ class ViewStockEntry extends ViewRecord
                 ])->alignment(Alignment::End),
                 Split::make([
                     Section::make([
-                        TextEntry::make('user.name')->label('Responsable'),
-                        TextEntry::make('location.nameType')->label('Ubicacion')->badge(),
+                        TextEntry::make('locationFrom.nameType')->label('Origen')->columnSpan(2),
+                        TextEntry::make('locationTo.nameType')->label('Destino')->columnSpan(2),
+                        TextEntry::make('userRequest.name')->label('Quien Solicita'),
+                        TextEntry::make('userApprove.name')->label('Quien Aprueba')->default('--'),
+
+
                         TextEntry::make('status')->label('Estado')->badge(),
-                        ViewEntry::make('products')->columnSpanFull()->view('filament.infolists.stock-entry-product-list')
-                    ])->columns(3),
+                        ViewEntry::make('products')->columnSpanFull()->view('filament.infolists.stock-transfer-product-list')
+                    ])->columns(4),
                     Section::make([
                         TextEntry::make('created_at')->label('Fecha de creacion')->dateTime(),
                         TextEntry::make('status_at')->label('Fecha de cambio de estado')
+
                             ->dateTime()
 
                     ])->grow(false),

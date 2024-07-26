@@ -31,7 +31,9 @@ class StockTransferResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
 
     public static ?string $label = 'Traslado';
+
     protected static ?string $pluralModelLabel = 'Traslados';
+
     protected static ?string $navigationGroup = 'Inventario';
 
     public static function form(Form $form): Form
@@ -49,7 +51,6 @@ class StockTransferResource extends Resource
                             ->afterStateUpdated(function (Set $set) {
                                 $set('location_to_id', null);
                                 $set('stockTransferProduct', []);
-
                             })
                             ->label('Origen')->required(),
 
@@ -67,9 +68,8 @@ class StockTransferResource extends Resource
                     ]),
 
 
-
                 Forms\Components\TextInput::make('barcode')
-                    ->hidden(fn(Get $get): bool => (!$get('location_from_id') || !$get('location_to_id')))
+                    ->hidden(fn (Get $get): bool => (!$get('location_from_id') || !$get('location_to_id')))
                     ->live()
                     ->label('')
                     ->placeholder('Codigo de barra')
@@ -79,7 +79,7 @@ class StockTransferResource extends Resource
                     ->dehydrated(false),
 
                 Forms\Components\Repeater::make('stockTransferProduct')
-                    ->hidden(fn(Get $get): bool => (!$get('location_from_id') || !$get('location_to_id')))
+                    ->hidden(fn (Get $get): bool => (!$get('location_from_id') || !$get('location_to_id')))
                     ->relationship()
                     ->required()
                     ->label('')
@@ -95,7 +95,7 @@ class StockTransferResource extends Resource
                             ->relationship(
                                 name: 'product',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn(Builder $query, Get $get) => $query
+                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
                                     ->whereHas('locations', function (Builder $query) use ($get) {
                                         $query->where('location_id', $get('../../location_from_id'));
                                     }),
@@ -134,6 +134,8 @@ class StockTransferResource extends Resource
                             ->default(1)
                             ->required()
                             ->numeric()
+                            ->maxValue(fn (Get $get) => ($get('stock')))
+                            ->helperText(fn (Get $get) => ("Maximo " . $get('stock')))
                             ->minValue(1),
                     ]),
 
@@ -192,16 +194,19 @@ class StockTransferResource extends Resource
     {
         return $table
             ->columns([
+
                 Tables\Columns\TextColumn::make('id')
                     ->label('Codigo')
-
                     ->searchable(),
-                Tables\Columns\TextColumn::make('locationTo.nameType')
-                    ->label('Origen')
-                    ->badge()
+                Tables\Columns\TextColumn::make('userRequest.name')
+                    ->label('Solicitante')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('locationFrom.nameType')
                     ->label('Destino')
+                    ->badge()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('locationTo.nameType')
+                    ->label('Origen')
                     ->badge()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('products_count')->counts('products')
@@ -216,10 +221,25 @@ class StockTransferResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')->label('Fecha de creacion')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')->label('Fecha de modificacion')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
             ])
             ->filters([
-                //
+                \Filament\Tables\Filters\SelectFilter::make('location_to_id')->label('Destino')
+                    ->options(Location::active()->get()->pluck('nameType', 'id'))
+                    ->columnSpan(2)
+                    ->preload(),
+                \Filament\Tables\Filters\SelectFilter::make('location_from_id')->label('Origen')
+                    ->options(Location::active()->get()->pluck('nameType', 'id'))
+                    ->columnSpan(2)
+                    ->preload(),
+                \Filament\Tables\Filters\SelectFilter::make('location_to_id')->label('Destino')
+                    ->options(Location::active()->get()->pluck('nameType', 'id'))
+                    ->columnSpan(2)
+                    ->preload()
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),

@@ -14,6 +14,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -66,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
-                fn(): string => Blade::render('
+                fn (): string => Blade::render('
                 @env("local")
                  <div class="space-y-2">
                     <x-login-link redirect_url="/admin" email="user@user.com" label="Inicio como admin"/>
@@ -78,7 +79,6 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ])
-            ->globalSearchDebounce('300ms');
-        ;
+            ->globalSearchDebounce('300ms');;
     }
 }

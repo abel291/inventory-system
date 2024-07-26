@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\SaleStatuEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,17 +15,29 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->string('code', 20);
-            $table->unsignedInteger('quantity');
             $table->decimal('sub_total', 12, 2);
-            $table->json('discount')->nullable();
-            $table->unsignedInteger('tax_value');
-            $table->unsignedTinyInteger('tax_rate');
+            $table->unsignedInteger('tax_value')->default(0);
+            $table->unsignedTinyInteger('tax_rate')->default(0);
+            $table->unsignedInteger('delivery')->default(0);
             $table->decimal('total', 12, 2);
             $table->json('data')->nullable();
-            $table->foreignId('contact_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('status')->default(SaleStatuEnum::ACCEPTED->value);
+            $table->foreignId('contact_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('location_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); //vendedor
+            // $table->foreignId('discount_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamp('refund_at')->nullable();
             $table->timestamps();
-            $table->softDeletes();
+        });
+
+        Schema::create('sale_products', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
+            $table->unsignedMediumInteger('price');
+            $table->unsignedMediumInteger('quantity');
+            $table->unsignedMediumInteger('total');
+            $table->timestamps();
         });
     }
 
@@ -34,5 +47,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('sales');
+        Schema::dropIfExists('sale_products');
     }
 };

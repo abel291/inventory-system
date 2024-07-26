@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\StockAdjustmentTypeEnum;
+use App\Enums\StockStatuEnum;
 use App\Models\Location;
 use App\Models\Stock;
 use App\Models\StockAdjustment;
@@ -28,12 +29,17 @@ class StockTransferSeeder extends Seeder
 
             $locationTo = $locations->where('id', '!=', $locationFrom->id)->random();
 
+            $status = fake()->randomElement(StockStatuEnum::cases());
+
             $stockTransfer = StockTransfer::factory()
                 ->create([
                     'location_from_id' => $locationFrom->id,
                     'location_to_id' => $locationTo->id,
-                    'user_approve_id' => $users->random()->id,
-                    'user_request_id' => $users->random()->id
+                    'user_request_id' => $users->random()->id,
+
+                    'status' => $status,
+                    'status_at' => $status == StockStatuEnum::PENDING ? null : now(),
+                    'user_approve_id' => $status == StockStatuEnum::PENDING ? null : $users->random()->id,
                 ]);
 
             $stock_selected = Stock::with('product')

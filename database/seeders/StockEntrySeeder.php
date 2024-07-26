@@ -46,9 +46,8 @@ class StockEntrySeeder extends Seeder
                 $productsEntry = [];
 
                 foreach ($products_chunk as $product) {
-                    $quantity = fake()->randomElement([6, 12, 24]);
                     $productsEntry[$product->id] = [
-                        'quantity' => $quantity,
+                        'quantity' => rand(50, 1000),
                         'cost' => round($product->price * 0.70),
                     ];
                 }

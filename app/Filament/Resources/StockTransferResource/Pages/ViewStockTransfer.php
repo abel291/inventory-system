@@ -39,14 +39,15 @@ class ViewStockTransfer extends ViewRecord
                 ComponentsActions::make([
                     Action::make('status-accepted')
                         ->color('success')
-                        ->icon('heroicon-m-check-circle')
-                        ->visible(fn($record) => ($record->status == StockStatuEnum::PENDING && $userCanChangeStatus))
+                        ->icon('heroicon-o-check-circle')
+                        ->visible(fn ($record) => ($record->status == StockStatuEnum::PENDING && $userCanChangeStatus))
                         ->label('Aceptar mercancia')
                         ->requiresConfirmation()
                         ->modalIcon('heroicon-o-check')
                         ->action(function (StockTransfer $record) {
                             $record->status = StockStatuEnum::ACCEPTED;
                             $record->status_at = now();
+                            $record->user_approve_id = auth()->id();
                             $record->save();
 
                             StockService::stockTransfer($record);
@@ -58,8 +59,8 @@ class ViewStockTransfer extends ViewRecord
                         }),
                     Action::make('status-rejected')
                         ->color('danger')
-                        ->icon('heroicon-m-x-circle')
-                        ->visible(fn($record) => ($record->status == StockStatuEnum::PENDING && $userCanChangeStatus))
+                        ->icon('heroicon-o-x-circle')
+                        ->visible(fn ($record) => ($record->status == StockStatuEnum::PENDING && $userCanChangeStatus))
                         ->label('Rechazar mercancia')
                         ->requiresConfirmation()
                         ->modalIcon('heroicon-o-x-mark')

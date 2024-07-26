@@ -16,7 +16,7 @@
                         {{ $product->name }}
                     </td>
                     <td class=" px-3 py-2.5 ">
-                        {{ Number::currency($product->pivot->cost) }}
+                        $ {{ Number::format($product->pivot->cost) }}
                     </td>
                     {{-- <td class=" px-3 py-2.5 ">
                         {{ Number::currency($product->price) }}

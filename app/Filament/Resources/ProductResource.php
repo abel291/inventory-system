@@ -95,14 +95,20 @@ class ProductResource extends Resource
             ->striped()
             ->columns([
                 Tables\Columns\ImageColumn::make('img')->label('Imagen')->height(56),
-                Tables\Columns\TextColumn::make('name')->translateLabel()->wrap()
-                    ->description(fn(Product $record): string => $record->barcode),
+                Tables\Columns\TextColumn::make('name')->translateLabel()
+                    ->searchable()
+                    ->wrap()
+                    ->description(fn (Product $record): string => $record->barcode),
 
-                Tables\Columns\TextColumn::make('locations')
-                    ->formatStateUsing(fn($state): string => $state->nameType)
-                    ->badge()->label('Ubicaciones'),
+                Tables\Columns\TextColumn::make('locations')->label('Ubicaciones')
+                    ->searchable()
+                    ->formatStateUsing(fn ($state): string => $state->nameType . " : " . $state->pivot->quantity)
+                    ->badge(),
 
-                Tables\Columns\TextColumn::make('price')->money('COP', locale: 'ES')->label('Precio')->sortable(),
+                Tables\Columns\TextColumn::make('price')->label('Precio')
+                    ->numeric()
+                    ->prefix('$')
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('active')
                     ->translateLabel()
                     ->boolean(),
@@ -129,13 +135,6 @@ class ProductResource extends Resource
     public static function filterProduct()
     {
         return [
-            SelectFilter::make('product')
-                ->options(Product::all()->pluck('nameBarcodePrice', 'id'))
-                ->optionsLimit(12)
-                ->searchable()
-                ->attribute('id')
-                ->label('Producto')
-                ->columnSpan(2),
             SelectFilter::make('category')
                 ->relationship('category', 'name')
                 ->preload()->label('Categoria'),

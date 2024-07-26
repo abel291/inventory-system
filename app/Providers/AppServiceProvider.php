@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Listeners\DisableForeignKeyMigrations;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Actions\DeleteAction;
@@ -12,6 +13,8 @@ use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
 
 
@@ -29,6 +32,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+        Number::useLocale('cop');
+        Event::listen(
+            DisableForeignKeyMigrations::class,
+        );
+
         Model::unguard();
 
         // Table::$defaultNumberLocale = 'nl';
@@ -46,7 +55,8 @@ class AppServiceProvider extends ServiceProvider
 
         Table::configureUsing(function (Table $table): void {
             $table->defaultPaginationPageOption(25)->defaultSort('id', 'desc');
-            $table->filtersLayout(FiltersLayout::AboveContent);
+            // $table->filtersLayout(FiltersLayout::AboveContent);
+            $table->searchDebounce('400ms');
         });
 
         Select::configureUsing(function (Select $component): void {

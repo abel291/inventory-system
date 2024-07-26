@@ -62,13 +62,13 @@ class ViewSale extends ViewRecord
                         TextEntry::make('client.name')->label('Cliente'),
                         TextEntry::make('client.phone')->label('Telefono'),
                         TextEntry::make('client.email')->label('Email'),
-                        TextEntry::make('client.nit')->label('nit')->columnSpan(2),
+                        TextEntry::make('client.nit')->label('Nit'),
                         TextEntry::make('location.nameType')->label('Ubicacion'),
                         TextEntry::make('user.name')->label('Vendedor'),
                         TextEntry::make('status')->label('Estado')->badge(),
                         ViewEntry::make('products')->columnSpanFull()->view('filament.infolists.sales-view')
                     ])
-                        ->columns(5)
+                        ->columns(4)
                         ->columnSpan(4),
 
                     Section::make([

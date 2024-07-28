@@ -1,27 +1,30 @@
 <div>
 
-    <table class="w-full  text-sm leading-6">
+    <table class="table-list mt-10">
         <thead>
             <tr>
-                <th class="font-medium text-left pr-3 py-3">Nombre</th>
-                <th class="font-medium text-left px-3 py-3">Costo</th>
-                {{-- <th class="font-medium text-left px-3 py-3">Precio de venta</th> --}}
-                <th class="font-medium text-left pl-3 py-3">Cantidad</th>
+                <th>Codigo</th>
+                <th class="">Nombre</th>
+                <th>Costo</th>
+                <th>Cantidad</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-900/10">
+        <tbody>
             @foreach ($getState() as $product)
-                <tr class="hover:bg-gray-50">
-                    <td class=" pr-3 py-2.5 ">
+                <tr>
+                    <td>
+                        {{ $product->barcode }}
+                    </td>
+                    <td>
                         {{ $product->name }}
                     </td>
-                    <td class=" px-3 py-2.5 ">
+                    <td>
                         $ {{ Number::format($product->pivot->cost) }}
                     </td>
-                    {{-- <td class=" px-3 py-2.5 ">
+                    {{-- <td >
                         {{ Number::currency($product->price) }}
                     </td> --}}
-                    <td class=" pl-3 py-2.5 ">
+                    <td>
                         {{ $product->pivot->quantity }}
                     </td>
                 </tr>

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\SaleResource\Section;
+namespace App\Filament\Resources\SaleResource\Form;
 
 use App\Forms\Components\SaleProductList;
 use App\Models\Product;
 use App\Models\Stock;
 use App\Services\SaleService;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
@@ -20,10 +21,12 @@ use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Support\RawJs;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 
-class SaleFormSection
+class SaleFormItemProduct
 {
     public static function products(): array
     {
@@ -41,7 +44,7 @@ class SaleFormSection
                 Select::make('stock_id')->label("Buscar por nombre")
                     ->live()
                     ->placeholder('Escriba el nombre del producto')
-                    ->columnSpan(2)
+                    ->columnSpan(3)
                     ->searchable()
                     ->preload()
                     ->options(function (Get $get) {
@@ -57,21 +60,26 @@ class SaleFormSection
             ]),
 
             Repeater::make('saleProducts')
-                ->relationship()
                 ->required()
                 ->label('')
                 ->default([])
                 ->columnSpanFull()
-                ->columns(4)
+                ->columns(8)
                 ->addable(false)
+                ->reorderable(false)
+                ->live(debounce: 300)
                 ->afterStateUpdated(function (Get $get, Set $set) {
                     self::updateTotals($get, $set);
                 })
+                ->deleteAction(
+                    fn (Action $action) => $action->after(fn (Get $get, Set $set) => self::updateTotals($get, $set)),
+                )
                 ->schema([
                     Hidden::make('product_id'),
                     TextInput::make('product_name')
-                        ->label('')
-                        ->disabled()->columnSpan(4),
+                        ->label('Producto')
+                        ->disabled()
+                        ->columnSpan(4),
 
                     TextInput::make('stock')
                         ->label('Existencia')
@@ -79,10 +87,7 @@ class SaleFormSection
 
                     TextInput::make('price')
                         ->label('Precio')
-                        ->prefix('$')
-                        ->disabled()
-                        ->stripCharacters('.')
-                        ->dehydrated(),
+                        ->disabled(),
 
                     TextInput::make('quantity')
                         ->label('Cantidad')
@@ -90,35 +95,12 @@ class SaleFormSection
                         ->required()
                         ->numeric()
                         ->maxValue(fn (Get $get) => (Str::remove(['.'], $get('stock'))))
-                        ->live(debounce: 800)
-                        ->afterStateUpdated(function (?string $state, $old, Get $get, Set $set) {
-
-                            $stock = Str::remove(['.'], $get('stock'));
-
-                            if ($state > $stock) {
-                                self::notificationLimitStock($get('product_name'));
-                                $set('quantity', $old);
-                                $state = $old;
-                            }
-                            $price = Str::remove(['.'], $get('price'));
-                            $set('totalPrice', self::calculatePriceQuantity($price, $state));
-                        })
                         ->minValue(1),
 
                     TextInput::make('totalPrice')
                         ->label('Precio Total')
-                        ->prefix('$')
-                        ->default(fn (Get $get, Set $set) => $get('totalPrice'))
-                        ->disabled()
-                        ->stripCharacters('.')
-                        ->dehydrated(),
-                ])
-                //->defaultItems(1)
-                ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
-                    $data['total'] = $data['totalPrice'];
-                    unset($data['totalPrice']);
-                    return $data;
-                }),
+                        ->disabled(),
+                ]),
 
         ];
     }
@@ -150,8 +132,8 @@ class SaleFormSection
             self::notificationProductNoFound();
             return;
         }
-        $listProducts = collect($get('saleProducts'));
-        $productSeleted = $listProducts->firstWhere('product_id', $stock->product_id);
+        $saleProducts = collect($get('saleProducts'));
+        $productSeleted = $saleProducts->firstWhere('product_id', $stock->product_id);
 
         if ($productSeleted) {
 
@@ -159,15 +141,14 @@ class SaleFormSection
                 self::notificationLimitStock($stock->product->name);
                 return;
             }
-            $listProducts = $listProducts->map(function ($item) use ($stock) {
+            $saleProducts = $saleProducts->map(function ($item) use ($stock) {
                 if ($item['product_id'] == $stock->product_id) {
                     $quantity = $item['quantity'] + 1;
                     $item['quantity'] = $quantity;
-                    $item['totalPrice'] = self::calculatePriceQuantity($stock->product->price, $quantity);
+                    // $item['totalPrice'] = self::calculatePriceQuantity($stock->product->price, $quantity);
                 }
                 return $item;
             });
-            $set('saleProducts', $listProducts->toArray());
 
             Notification::make()
                 ->title('El producto ya esta en la lista , se le agrego +1')
@@ -175,30 +156,69 @@ class SaleFormSection
                 ->send();
         } else {
 
-
-            $set('saleProducts', [
-                [
-                    'product_id' => $stock->product->id,
-                    'product_name' => $stock->product->nameBarcode,
-                    'stock' => Number::format($stock->quantity),
-                    'price' => Number::format($stock->product->price),
-                    'quantity' => 1,
-                    'totalPrice' => Number::format($stock->product->price),
-                ],
-                ...$get('saleProducts')
+            $saleProducts->push([
+                'product_id' => $stock->product->id,
+                'product_name' => $stock->product->nameBarcode,
+                'stock' => $stock->quantity,
+                'quantity' => 1,
             ]);
         }
+
+        $set('saleProducts', $saleProducts->toArray());
+
         self::updateTotals($get, $set);
     }
 
     public static function updateTotals(Get $get, Set $set): void
     {
-        // Retrieve all selected products and remove empty rows
-        $subtotal = SaleService::calculateSubTotal($get('saleProducts'));
 
-        // Update the state with the new values
-        $set('sub_total', Number::format($subtotal));
-        $set('total', Number::format($subtotal + (int)$get('delivery')));
+        $selectedProducts = self::validateData($get('saleProducts'));
+
+        $prices = Product::find($selectedProducts->pluck('product_id'))->pluck('price', 'id');
+
+        $selectedProducts = $selectedProducts->map(function (array $item, int $key) use ($prices) {
+
+            $price = $prices[$item['product_id']];
+            $totalPrice = ($prices[$item['product_id']] * $item['quantity']);
+            $item['price'] = "$ " . Number::format($price);
+            $item['totalPrice'] = "$ " . Number::format($totalPrice);
+            return $item;
+        });
+
+        $subtotal = $selectedProducts->sum(function (array $item) {
+            return Str::remove(['.', '$'], $item['totalPrice']);
+        });
+
+
+        if ($get('discount.percent') && $subtotal > 0) {
+
+            $discount_amount = $subtotal * ($get('discount.percent') / 100);
+        } else {
+            $discount_amount = 0;
+        }
+
+        $total = ($subtotal + (int)$get('delivery')) - $discount_amount;
+
+        $set('saleProducts', $selectedProducts->toArray());
+
+        $set('subtotal', $subtotal);
+
+        $set('discount.amount', $discount_amount);
+
+        $set('total', $total);
+    }
+    public static function validateData($products)
+    {
+        return  collect($products)
+            ->filter(fn ($item) => !empty($item['product_id']) && !empty($item['quantity']))
+            ->map(function ($item) {
+
+                if ($item['quantity'] > $item['stock']) {
+                    $item['quantity'] = $item['stock'];
+                    self::notificationLimitStock($item['product_name']);
+                }
+                return $item;
+            });
     }
 
     public static function notificationLimitStock(string $productName)

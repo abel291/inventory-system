@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ExpenseSeeder::class,
             StockEntrySeeder::class,
             StockTransferSeeder::class,
+            PaymentMethodSeeder::class,
 
         ]);
     }

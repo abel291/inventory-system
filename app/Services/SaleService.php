@@ -17,7 +17,7 @@ class SaleService
     public static function generateCode(): string
     {
 
-        return strtoupper(fake()->bothify('??#####'));
+        return strtoupper(now()->isoFormat('dd') . fake()->bothify('#####'));
     }
 
     public static function calculateSubTotal($products): string
@@ -25,13 +25,14 @@ class SaleService
 
         $selectedProducts = collect($products)->filter(fn ($item) => !empty($item['product_id']) && !empty($item['quantity']));
 
-
         $prices = Product::find($selectedProducts->pluck('product_id'))->pluck('price', 'id');
 
         $subtotal = $selectedProducts->reduce(function ($subtotal, $product) use ($prices) {
 
             return $subtotal + ($prices[$product['product_id']] * $product['quantity']);
         }, 0);
+
+
 
         return $subtotal;
     }

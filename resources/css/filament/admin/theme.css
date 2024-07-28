@@ -37,6 +37,20 @@
 .table-list tr td:last-child {
     @apply pl-4;
 }
+
+.label-total .fi-fo-field-wrp > div {
+    @apply flex justify-between;
+}
+
+.label-total .fi-fo-field-wrp > div .fi-fo-field-wrp-label span {
+    @apply text-neutral-500 dark:text-neutral-400 font-medium text-sm capitalize;
+}
+.label-total .fi-fo-field-wrp > div .fi-fo-placeholder span {
+    @apply text-neutral-900 dark:text-neutral-100 font-medium text-sm;
+}
+.label-total > div {
+    @apply gap-3;
+}
 /*
 .fi-ta-ctn,
 .fi-sidebar-item-button,

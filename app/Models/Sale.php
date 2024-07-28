@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SalePaymentTypeEnum;
 use App\Enums\SaleStatuEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,8 @@ class Sale extends Model
 
     protected $casts = [
         'status' => SaleStatuEnum::class,
+        'payment_type' => SalePaymentTypeEnum::class,
+        'discount' => 'json',
     ];
 
     public function saleProducts(): HasMany
@@ -37,5 +40,14 @@ class Sale extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 }

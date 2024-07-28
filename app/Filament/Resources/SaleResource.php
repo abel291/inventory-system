@@ -3,11 +3,17 @@
 namespace App\Filament\Resources;
 
 use App\Enums\ContactTypesEnum;
+use App\Enums\SalePaymentTypeEnum;
+use App\Filament\Resources\SaleResource\Form\SaleFormClient;
+use App\Filament\Resources\SaleResource\Form\SaleFormDiscount;
+use App\Filament\Resources\SaleResource\Form\SaleFormItemProduct;
+use App\Filament\Resources\SaleResource\Form\SaleFormPayment;
 use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\Pages\ViewSale;
 use App\Filament\Resources\SaleResource\RelationManagers;
-use App\Filament\Resources\SaleResource\Section\SaleFormSection;
-use App\Filament\Resources\SaleResource\Section\SectionForm;
+use App\Filament\Resources\SaleResource\RelationManagers\PaymentsRelationManager;
+use App\Forms\Components\ItemDescriptionList;
+use App\Forms\Components\LayoutDescriptionList;
 use App\Models\Contact;
 use App\Models\Location;
 use App\Models\Product;
@@ -19,14 +25,20 @@ use Filament\Forms\Components\Component;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Livewire;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\View;
+use Filament\Forms\Components\ViewField;
+use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
@@ -34,7 +46,9 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Number;
 
 use function Pest\Laravel\options;
 
@@ -51,87 +65,62 @@ class SaleResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->columns(3)
+            ->columns(4)
             ->schema([
                 Section::make('Informacion de la venta')
                     ->columns(4)
                     ->icon('heroicon-o-information-circle')
                     ->schema([
-                        TextInput::make('code')->label('Codigo')
-                            ->default(SaleService::generateCode())
-                            ->disabled()
-                            ->dehydrated(),
-                        Select::make('contact_id')
-                            ->label('Cliente')
-                            ->searchable(['name', 'email', 'nit', 'phone'])
-                            ->getOptionLabelFromRecordUsing(fn (Contact $record) => "{$record->name} - nit {$record->nit}")
-                            ->relationship(
-                                'client',
-                                'name',
-                                modifyQueryUsing: fn (Builder $query) => $query->whereIn('type', [
-                                    ContactTypesEnum::CLIENT, ContactTypesEnum::CLIENT_PROVIDER
-                                ])->orderBy('id', 'desc'),
-                            )
-                            ->default(fn () => Contact::where('nit', '222222222')->first()->id)
-                            ->preload(),
-
-                        DateTimePicker::make('created_at')->disabled()->native(false)->default(now())->secondsStep(false)->label('Fecha'),
-
-                        Select::make('location_id')->label('Ubicacion')
-                            ->disabled(fn (Get $get) => ($get('saleProducts')))
-                            ->live()
-                            ->relationship('location', 'name', fn ($query) => ($query->active()))
-                            ->getOptionLabelFromRecordUsing(fn (Location $record) => "{$record->nameType}")
-                            ->default(1)
-                            ->selectablePlaceholder(false)
-                            ->preload()
-                            ->afterStateUpdated(function (Set $set) {
-                                $set('saleProducts', []);
-                            })
-                            ->required(),
-
+                        ...SaleFormClient::form(),
                     ]),
-
                 Section::make('Productos')
-                    ->columns(3)
+                    ->columns(4)
                     ->icon('heroicon-o-shopping-cart')
-                    ->schema(
-                        SaleFormSection::products()
-                    ),
+                    ->schema(SaleFormItemProduct::products()),
 
+                Section::make('Descuentos y envio')
+                    ->columns(6)
+                    ->icon('heroicon-o-receipt-percent')
+                    ->schema([...SaleFormDiscount::form()]),
                 Section::make('Resumen')
-                    ->columnStart(3)
-                    ->columnSpan(1)
-                    ->columns(1)
-                    ->icon('heroicon-o-currency-dollar')
-                    ->live(debounce: 500)
+                    ->columns(4)
+                    ->columnStart(4)
                     ->schema([
-                        TextInput::make('sub_total')->label('Sub total')
-                            ->disabled()
-                            ->dehydrated()
-                            ->stripCharacters('.')
-                            ->prefix('$'),
-
-                        TextInput::make('delivery')->label('Envio')
-                            ->default(0)
-                            ->minValue(0)
-                            ->numeric()
-                            ->afterStateUpdated(fn (Get $get, Set $set) => (SaleFormSection::updateTotals($get, $set)))
-                            ->prefix('$')
-                            ->debounce(500),
-
-                        TextInput::make('total')->label('Total')
-                            ->disabled()
-                            ->dehydrated()
-                            ->stripCharacters('.')
-                            ->prefix('$'),
+                        ...self::formSectionTotal(),
                     ]),
-                // Section::make('Descuentos')
+                Section::make('Pago')
+                    ->columns(3)
+                    ->columnSpanFull()
+                    ->icon('heroicon-o-credit-card')
+                    ->schema(SaleFormPayment::form()),
+                Hidden::make('subtotal')->disabled()->default(0),
+                Hidden::make('discount.amount')->disabled(),
+                Hidden::make('total')->disabled()->default(0),
+
 
             ]);
     }
     public static function formSectionTotal()
     {
+        return [
+
+            Grid::make(1)
+                ->extraAttributes(['class' => 'label-total'])
+                ->columnSpanFull()
+                ->schema([
+                    Placeholder::make('label-sub-total')->label('sub total')->content(fn (Get $get) => "$ " . Number::format($get('subtotal'))),
+                    Placeholder::make('labe-discount.amount')->label(fn (Get $get) => "Descuento ({$get('discount.percent')}%)")
+                        ->default(0)
+                        ->visible(fn (Get $get) => $get('discount.percent'))
+                        ->content(fn (Get $get) => "-$ " . Number::format($get('discount.amount'))),
+                    Placeholder::make('label-delivery')->label('Envio')
+                        ->default(0)
+                        ->content(fn (Get $get) => "$ " . Number::format($get('delivery'))),
+                    Placeholder::make('label-total')->label('Total')->content(fn (Get $get) => "$ " . Number::format($get('total'))),
+
+
+                ])
+        ];
     }
 
     public static function table(Table $table): Table
@@ -145,6 +134,7 @@ class SaleResource extends Resource
                 TextColumn::make('delivery')->label('Costo de envio')->numeric()->prefix('$'),
                 TextColumn::make('total')->label('Precio Total')->numeric()->prefix('$'),
                 TextColumn::make('status')->badge(),
+                TextColumn::make('payment_type')->label('Tipo de pago')->badge(),
                 TextColumn::make('created_at')->label('Fecha de la venta')->dateTime(),
             ])
             ->filters([
@@ -152,7 +142,7 @@ class SaleResource extends Resource
             ])
             ->actions([
                 // Tables\Actions\EditAction::make()->icon(null),
-                Tables\Actions\ViewAction::make()->icon(null),
+                Tables\Actions\ViewAction::make()->icon(null)->label('Ver venta'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -164,9 +154,10 @@ class SaleResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PaymentsRelationManager::class,
         ];
     }
+
 
     public static function getPages(): array
     {

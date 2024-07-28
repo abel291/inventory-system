@@ -22,7 +22,7 @@ class Product extends Model
 
     protected function getNameBarcodePriceAttribute()
     {
-        return $this->barcode . " - " . $this->name . " - " . Number::currency($this->price);
+        return $this->barcode . " - " . $this->name . " - $ " . Number::format($this->price);
     }
 
     public function category(): BelongsTo

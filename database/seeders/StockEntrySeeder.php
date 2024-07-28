@@ -56,7 +56,7 @@ class StockEntrySeeder extends Seeder
 
                 StockService::stockEntryAddition($stockEntry);
 
-                $this->command->info($stockEntry->id);
+                $this->command->info('Entrada:' . $stockEntry->id);
             }
         }
     }

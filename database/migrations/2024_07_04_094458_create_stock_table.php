@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\StockStatuEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -41,19 +42,22 @@ return new class extends Migration
 
         Schema::create('stock_transfers', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->default('pending'); //aprobado pendiente rechazado
+            $table->string('status')->default(StockStatuEnum::PENDING->value); //aprobado pendiente rechazado
+            $table->timestamp('status_at')->nullable(); // cambio de status
             $table->string('note')->nullable();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('location_to_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_request_id')->constrained()->cascadeOnDelete(); //quien solicitante
+            $table->foreignId('user_approve_id')->nullable()->constrained()->cascadeOnDelete(); //quiuen aprueba
             $table->foreignId('location_from_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('location_to_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
 
         Schema::create('stock_transfer_product', function (Blueprint $table) {
             $table->id();
-            $table->unsignedMediumInteger('quantity');
             $table->foreignId('stock_transfer_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->unsignedMediumInteger('quantity');
+
             $table->timestamps();
         });
 
@@ -66,7 +70,8 @@ return new class extends Migration
             $table->foreignId('location_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
-        });}
+        });
+    }
 
     /**
      * Reverse the migrations.

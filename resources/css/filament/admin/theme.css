@@ -5,7 +5,53 @@
 .fi-input-wrp {
     @apply rounded;
 }
+.table-list {
+    @apply w-full leading-6;
+}
+.table-list tr {
+    @apply text-sm;
+}
+.table-list tbody {
+    @apply border-t border-gray-300 dark:border-white/10 divide-y divide-gray-200 dark:divide-white/5;
+}
+.table-list tbody tr {
+    @apply hover:bg-gray-50 dark:hover:bg-white/5;
+}
+.table-list tr th {
+    @apply pb-3.5 px-2 text-start text-sm font-medium text-neutral-500 dark:text-neutral-400;
+}
+.table-list tr td {
+    @apply py-3;
+}
+.table-list tr th:last-child {
+    @apply text-right;
+}
+.table-list tbody tr td:last-child {
+    @apply text-right;
+}
+.table-list tr th:first-child,
+.table-list tr td:first-child {
+    @apply pr-4;
+}
+.table-list tr th:last-child,
+.table-list tr td:last-child {
+    @apply pl-4;
+}
 
+.label-total .fi-fo-field-wrp > div {
+    @apply flex justify-between;
+}
+
+.label-total .fi-fo-field-wrp > div .fi-fo-field-wrp-label span {
+    @apply text-neutral-500 dark:text-neutral-400 font-medium text-sm capitalize;
+}
+.label-total .fi-fo-field-wrp > div .fi-fo-placeholder span {
+    @apply text-neutral-900 dark:text-neutral-100 font-medium text-sm;
+}
+.label-total > div {
+    @apply gap-3;
+}
+/*
 .fi-ta-ctn,
 .fi-sidebar-item-button,
 .fi-btn {
@@ -65,4 +111,4 @@
 }
 .fi-tabs-item-active {
     @apply bg-gray-100;
-}
+} */

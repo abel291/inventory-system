@@ -18,7 +18,8 @@ class StockService
 
         if ($stockEntry->status != StockStatuEnum::ACCEPTED) {
             return;
-        };
+        }
+        ;
 
         foreach ($stockEntry->products as $product) {
 
@@ -34,7 +35,14 @@ class StockService
 
     public static function stockTransfer(StockTransfer $stockTransfer)
     {
+
+        if ($stockTransfer->status != StockStatuEnum::ACCEPTED) {
+            return;
+        }
+        ;
+
         foreach ($stockTransfer->products as $product) {
+
 
             StockMovement::create([
                 'location_id' => $stockTransfer->location_from_id,
@@ -43,6 +51,7 @@ class StockService
                 'operation' => StockMovementOperationEnum::SUBTRACTION,
                 'quantity' => $product->pivot->quantity,
             ]);
+
             StockMovement::create([
                 'location_id' => $stockTransfer->location_to_id,
                 'product_id' => $product->id,
@@ -50,6 +59,7 @@ class StockService
                 'operation' => StockMovementOperationEnum::ADDITION,
                 'quantity' => $product->pivot->quantity,
             ]);
+
         }
     }
 }

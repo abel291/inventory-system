@@ -16,8 +16,15 @@ class ContactSeeder extends Seeder
     {
         Contact::truncate();
 
+
         Contact::factory()->state(['type' => ContactTypesEnum::CLIENT->value])->count(20)->create();
         Contact::factory()->state(['type' => ContactTypesEnum::PROVIDER->value])->count(20)->create();
         Contact::factory()->state(['type' => ContactTypesEnum::CLIENT_PROVIDER->value])->count(10)->create();
+
+        Contact::factory()->state(['type' => ContactTypesEnum::CLIENT->value])->create([
+            'name' => 'Cliente Anonimo',
+            'nit' => '222222222',
+            'email' => 'client@client.com'
+        ]);
     }
 }

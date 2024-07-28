@@ -6,36 +6,37 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum StockStatuEnum: string implements HasLabel, HasColor, HasIcon
+enum SaleStatuEnum: string implements HasLabel, HasColor, HasIcon
 {
-    case PENDING = 'pending';
+
     case ACCEPTED = 'accepted';
-    case REJECTED = 'rejected';
+    case CANCELLED = 'rejected';
+    case REFUNDED = 'refunded';
 
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::PENDING => 'Pendiente',
+            self::REFUNDED => 'Devolucion',
             self::ACCEPTED => 'Aceptada',
-            self::REJECTED => 'Rechazada',
+            self::CANCELLED => 'Cancelada',
         };
     }
 
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::PENDING => 'warning',
+            self::REFUNDED => 'warning',
             self::ACCEPTED => 'success',
-            self::REJECTED => 'danger',
+            self::CANCELLED => 'danger',
         };
     }
 
     public function getIcon(): string
     {
         return match ($this) {
-            self::PENDING => 'heroicon-s-arrow-path',
+            self::REFUNDED => 'heroicon-s-receipt-refund',
             self::ACCEPTED => 'heroicon-s-check-circle',
-            self::REJECTED => 'heroicon-m-x-circle',
+            self::CANCELLED => 'heroicon-m-x-circle',
         };
     }
 }

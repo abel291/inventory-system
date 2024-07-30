@@ -42,14 +42,14 @@ class ViewSale extends ViewRecord
         return $infolist
             ->schema([
 
-                Grid::make(4)
+                Grid::make(3)
                     ->schema([
                         ComponentsActions::make([
                             Action::make('status-change')->label('Devolucion')
                                 ->color('danger')
                                 ->link()
                                 ->icon('heroicon-o-receipt-refund')
-                                ->visible(fn ($record) => ($record->status == SaleStatuEnum::ACCEPTED))
+                                ->visible(fn($record) => ($record->status == SaleStatuEnum::ACCEPTED))
 
                                 ->requiresConfirmation()
                                 ->modalIcon('heroicon-o-check')
@@ -63,7 +63,7 @@ class ViewSale extends ViewRecord
                                         ->send();
                                 }),
 
-                        ])->columns(4)->columnStart(3)->alignment(Alignment::End),
+                        ])->columns(4)->columnStart(2)->alignment(Alignment::End),
                         Section::make([
                             TextEntry::make('client.name')->label('Cliente'),
                             TextEntry::make('client.phone')->label('Telefono'),
@@ -75,7 +75,7 @@ class ViewSale extends ViewRecord
                             TextEntry::make('payment_type')->label('Tipo de pago')->badge(),
                             ViewEntry::make('products')->columnSpanFull()->view('filament.infolists.sales-view')
                         ])
-                            ->columnSpan(3)
+                            ->columnSpan(2)
                             ->columns(4),
 
                         Grid::make(1)
@@ -84,16 +84,16 @@ class ViewSale extends ViewRecord
                             ->schema([
                                 Section::make([
                                     TextEntry::make('created_at')->label('Fecha de  la venta')->dateTime(),
-                                    TextEntry::make('refund_at')->visible(fn ($state) => $state)->label('Fecha de  la venta')->dateTime(),
+                                    TextEntry::make('refund_at')->visible(fn($state) => $state)->label('Fecha de  la venta')->dateTime(),
 
                                 ])->columnSpan(1),
                                 Section::make('Pago')
-                                    ->visible(fn ($record) => $record->payment_type == SalePaymentTypeEnum::CASH)
+                                    ->visible(fn($record) => $record->payment_type == SalePaymentTypeEnum::CASH)
                                     ->schema([
                                         TextEntry::make('payment.paymentMethod.name')->label('Metodo de pago'),
                                         TextEntry::make('payment.reference')->label('Referencia'),
                                         TextEntry::make('payment.amount')->label('Monto')
-                                            ->formatStateUsing(fn ($state) => "$ " . Number::format($state)),
+                                            ->formatStateUsing(fn($state) => "$ " . Number::format($state)),
                                         TextEntry::make('payment.note')->label('Observacion')->default('- sin observacion')
 
 

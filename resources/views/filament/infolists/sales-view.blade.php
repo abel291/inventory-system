@@ -14,13 +14,13 @@
                     <td>
                         {{ $product->name }}
                     </td>
-                    <td>
+                    <td class="whitespace-nowrap">
                         $ {{ Number::format($product->pivot->price, 2) }}
                     </td>
                     <td align="center">
                         {{ $product->pivot->quantity }}
                     </td>
-                    <td>
+                    <td class="whitespace-nowrap">
                         $ {{ Number::format($product->pivot->total, 2) }}
                     </td>
                 </tr>

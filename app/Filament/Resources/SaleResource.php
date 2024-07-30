@@ -65,7 +65,7 @@ class SaleResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->columns(4)
+            ->columns(3)
             ->schema([
                 Section::make('Informacion de la venta')
                     ->columns(4)
@@ -83,8 +83,8 @@ class SaleResource extends Resource
                     ->icon('heroicon-o-receipt-percent')
                     ->schema([...SaleFormDiscount::form()]),
                 Section::make('Resumen')
-                    ->columns(4)
-                    ->columnStart(4)
+
+                    ->columnStart(3)
                     ->schema([
                         ...self::formSectionTotal(),
                     ]),
@@ -108,15 +108,15 @@ class SaleResource extends Resource
                 ->extraAttributes(['class' => 'label-total'])
                 ->columnSpanFull()
                 ->schema([
-                    Placeholder::make('label-sub-total')->label('sub total')->content(fn (Get $get) => "$ " . Number::format($get('subtotal'))),
-                    Placeholder::make('labe-discount.amount')->label(fn (Get $get) => "Descuento ({$get('discount.percent')}%)")
+                    Placeholder::make('label-sub-total')->label('sub total')->content(fn(Get $get) => "$ " . Number::format($get('subtotal'))),
+                    Placeholder::make('labe-discount.amount')->label(fn(Get $get) => "Descuento ({$get('discount.percent')}%)")
                         ->default(0)
-                        ->visible(fn (Get $get) => $get('discount.percent'))
-                        ->content(fn (Get $get) => "-$ " . Number::format($get('discount.amount'))),
+                        ->visible(fn(Get $get) => $get('discount.percent'))
+                        ->content(fn(Get $get) => "-$ " . Number::format($get('discount.amount'))),
                     Placeholder::make('label-delivery')->label('Envio')
                         ->default(0)
-                        ->content(fn (Get $get) => "$ " . Number::format($get('delivery'))),
-                    Placeholder::make('label-total')->label('Total')->content(fn (Get $get) => "$ " . Number::format($get('total'))),
+                        ->content(fn(Get $get) => "$ " . Number::format($get('delivery'))),
+                    Placeholder::make('label-total')->label('Total')->content(fn(Get $get) => "$ " . Number::format($get('total'))),
 
 
                 ])

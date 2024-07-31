@@ -80,17 +80,14 @@ class ViewStockTransfer extends ViewRecord
                         TextEntry::make('locationFrom.nameType')->label('Origen')->columnSpan(2),
                         TextEntry::make('locationTo.nameType')->label('Destino')->columnSpan(2),
                         TextEntry::make('userRequest.name')->label('Quien Solicita'),
-                        TextEntry::make('userApprove.name')->label('Quien Aprueba')->default('--'),
+                        // TextEntry::make('userApprove.name')->label('Quien Aprueba')->default('--'),
 
-
-                        TextEntry::make('status')->label('Estado')->badge(),
+                        // TextEntry::make('status')->label('Estado')->badge(),
                         ViewEntry::make('products')->columnSpanFull()->view('filament.infolists.stock-transfer-product-list')
                     ])->columns(4),
                     Section::make([
                         TextEntry::make('created_at')->label('Fecha de creacion')->dateTime(),
-                        TextEntry::make('status_at')->label('Fecha de cambio de estado')
-
-                            ->dateTime()
+                        // TextEntry::make('status_at')->label('Fecha de cambio de estado')->dateTime()
 
                     ])->grow(false),
                 ])->from('md'),

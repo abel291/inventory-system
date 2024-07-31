@@ -20,8 +20,7 @@ return new class extends Migration
             $table->unsignedMediumInteger('old_quantity')->default(0);
             $table->foreignId('location_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-
-
+            $table->morphs('model_id');
             $table->timestamps();
         });
     }

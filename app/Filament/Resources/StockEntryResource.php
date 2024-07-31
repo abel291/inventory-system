@@ -4,10 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Enums\StockStatuEnum;
 use App\Filament\Resources\StockEntryResource\Pages\CreateStockEntry;
+use App\Filament\Resources\StockEntryResource\Pages\EditStockEntry;
 use App\Filament\Resources\StockEntryResource\Pages\ListStockEntry;
 use App\Filament\Resources\StockEntryResource\Pages\ManageStockEntryProducts;
 use App\Filament\Resources\StockEntryResource\Pages\ViewStockEntry;
 use App\Filament\Resources\StockResource\Pages;
+use App\Filament\Resources\StockResource\Pages\EditStock;
+
 use App\Models\Location;
 use App\Models\Product;
 use App\Models\Stock;
@@ -80,7 +83,7 @@ class StockEntryResource extends Resource implements HasShieldPermissions
                 Forms\Components\Grid::make()->columns(2),
 
                 Forms\Components\Repeater::make('stockEntryProducts')
-                    ->hidden(fn(Get $get): bool => !$get('location_id'))
+                    ->hidden(fn (Get $get): bool => !$get('location_id'))
                     ->relationship()
                     ->required()
                     ->label('Productos')
@@ -184,6 +187,7 @@ class StockEntryResource extends Resource implements HasShieldPermissions
 
             ->actions([
                 Tables\Actions\ViewAction::make()->label('Ver productos'),
+                Tables\Actions\EditAction::make()->label('Editar'),
 
             ])
             ->bulkActions([
@@ -219,6 +223,7 @@ class StockEntryResource extends Resource implements HasShieldPermissions
             'index' => ListStockEntry::route('/'),
             'create' => CreateStockEntry::route('/create'),
             'view' => ViewStockEntry::route('/{record}'),
+            'edit' => EditStockEntry::route('/{record}/edit'),
             'products' => ManageStockEntryProducts::route('/{record}/products'),
         ];
     }

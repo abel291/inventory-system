@@ -57,12 +57,12 @@ class ViewSale extends ViewRecord
                                 ->color('danger')
                                 ->link()
                                 ->icon('heroicon-o-x-circle')
-                                ->visible(fn ($record) => ($record->status == SaleStatuEnum::ACCEPTED))
+                                ->visible(fn($record) => ($record->status == SaleStatuEnum::ACCEPTED))
 
                                 ->requiresConfirmation()
                                 ->modalIcon('heroicon-o-x-circle')
                                 ->form([
-                                    Toggle::make('refund')->label(fn (Sale $record) => 'Rembolsar dinero ' . Number::currency($record->total))->onColor('danger')->required(),
+                                    Toggle::make('refund')->label(fn(Sale $record) => 'Rembolsar dinero ' . Number::currency($record->total))->onColor('danger')->required(),
                                 ])
                                 ->action(function (array $data, Sale $record) {
                                     if ($data['refund']) {
@@ -100,37 +100,32 @@ class ViewSale extends ViewRecord
                             ->schema([
                                 Section::make([
                                     TextEntry::make('created_at')->label('Fecha de  la venta')->dateTime(),
-                                    TextEntry::make('refund_at')->visible(fn ($state) => $state)->label('Fecha de devolucion')->dateTime(),
+                                    TextEntry::make('refund_at')->visible(fn($state) => $state)->label('Fecha de devolucion')->dateTime(),
 
                                 ])->columnSpan(1),
 
                                 Section::make('Pago')
-                                    ->visible(fn ($record) => $record->payment_type == SalePaymentTypeEnum::CASH)
+                                    ->visible(fn($record) => $record->payment_type == SalePaymentTypeEnum::CASH)
                                     ->columns(2)
                                     ->schema([
                                         TextEntry::make('payment_type')->label('Tipo de pago')->badge(),
                                         TextEntry::make('payment.paymentMethod.name')->label('Metodo de pago'),
                                         TextEntry::make('payment.reference')->label('Referencia'),
                                         TextEntry::make('payment.amount')->label('Monto')->money(locale: 'de'),
-                                        TextEntry::make('payment.note')
-                                            ->columnSpanFull()->label('Observacion')->placeholder('- sin observacion')
-
-
+                                        TextEntry::make('payment.note')->columnSpanFull()->label('Observacion')->placeholder('- sin observacion')
 
                                     ]),
                                 Section::make('Pagos')
-                                    ->visible(fn ($record) => $record->payment_type == SalePaymentTypeEnum::CREDIT)
+                                    ->visible(fn($record) => $record->payment_type == SalePaymentTypeEnum::CREDIT)
                                     ->columns(2)
                                     ->schema([
                                         TextEntry::make('payment_type')->label('Tipo de pago')->badge(),
-                                        TextEntry::make('payments')->label('Abonos realizados')
-                                            ->numeric()
-                                            ->state(fn (Sale $record) => $record->payments->count()),
+                                        TextEntry::make('payments')->label('Abonos realizados')->numeric()
+                                            ->state(fn(Sale $record) => $record->payments->count()),
                                         TextEntry::make('pendingPayments')->label('Saldo pendiente')->money(locale: 'de')
-                                            ->state(fn (Sale $record) => $record->pendingPayments()),
-                                        TextEntry::make('totalPayments')->label('Saldo pagado')
-                                            ->money(locale: 'de')
-                                            ->state(fn (Sale $record) => $record->totalPayments()),
+                                            ->state(fn(Sale $record) => $record->pendingPayments()),
+                                        TextEntry::make('totalPayments')->label('Saldo pagado')->money(locale: 'de')
+                                            ->state(fn(Sale $record) => $record->totalPayments()),
                                     ])
                             ])
                     ]),

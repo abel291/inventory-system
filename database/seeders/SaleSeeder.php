@@ -54,6 +54,8 @@ class SaleSeeder extends Seeder
                 'contact_id' => $client->id,
                 'location_id' => $location->id,
                 'user_id' => $users->random()->id,
+                'created_at' => fake()->dateTimeBetween('-1 month', 'now'),
+
             ]);
 
             $stock = Stock::with('product')->where([
@@ -65,7 +67,7 @@ class SaleSeeder extends Seeder
 
             $saleProducts = $stock->random($productCount)->map(function ($item) {
                 $price = $item->product->price;
-                $quantity = rand(1, min(4, $item->quantity));
+                $quantity = rand(1, min(3, $item->quantity));
                 return [
                     'product_id' => $item->product->id,
                     'price' => $price,

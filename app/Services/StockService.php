@@ -9,8 +9,10 @@ use App\Enums\StockStatuEnum;
 use App\Models\Sale;
 use App\Models\Stock;
 use App\Models\StockEntry;
+use App\Models\StockEntryProduct;
 use App\Models\StockMovement;
 use App\Models\StockTransfer;
+use App\Models\StockTransferProduct;
 use Illuminate\Support\Facades\Artisan;
 
 class StockService
@@ -20,10 +22,10 @@ class StockService
 
         if ($stockEntry->status != StockStatuEnum::ACCEPTED) {
             return;
-        };
+        }
+
 
         foreach ($stockEntry->products as $product) {
-
             StockMovement::create([
                 'location_id' => $stockEntry->location_id,
                 'product_id' => $product->id,
@@ -39,7 +41,8 @@ class StockService
 
         if ($stockTransfer->status != StockStatuEnum::ACCEPTED) {
             return;
-        };
+        }
+        ;
 
         foreach ($stockTransfer->products as $product) {
 
@@ -63,7 +66,7 @@ class StockService
     }
     public static function sale(Sale $sale)
     {
-        foreach ($sale->saleProducts as  $item) {
+        foreach ($sale->saleProducts as $item) {
 
             $type_opeation = [];
             switch ($sale->status) {
@@ -95,4 +98,13 @@ class StockService
             ]);
         }
     }
+    public function refreshStock($product_id, $location_id)
+    {
+        $stockEntryProduct = StockEntryProduct::where('product_id', $product_id)
+            ->whereRelation('stockEntry', 'location_id', $location_id)->sum('quantity');
+
+        $stockEntryProduct = StockTransferProduct::where('product_id', $product_id)
+            ->whereRelation('stockTransfer', 'location_to_id', $location_id)->sum('quantity');
+    }
 }
+

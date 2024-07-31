@@ -1,3 +1,3 @@
 ## Screenshot Dashboard 🖥️️
 
-![screenshot-1](/public/screenshot/screenshot-1.jpg)
+![screenshot-1](/public/screenshot/screenshot-1.png)

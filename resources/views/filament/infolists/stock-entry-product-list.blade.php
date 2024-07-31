@@ -1,12 +1,11 @@
-<div>
-
-    <table class="table-list mt-10">
+<div class="table-list-wrp">
+    <table class="table-list ">
         <thead>
             <tr>
                 <th>Codigo</th>
                 <th class="">Nombre</th>
-                <th>Costo</th>
                 <th>Cantidad</th>
+                <th>Costo</th>
             </tr>
         </thead>
         <tbody>
@@ -19,13 +18,10 @@
                         {{ $product->name }}
                     </td>
                     <td>
-                        $ {{ Number::format($product->pivot->cost) }}
-                    </td>
-                    {{-- <td >
-                        {{ Number::currency($product->price) }}
-                    </td> --}}
-                    <td>
                         {{ $product->pivot->quantity }}
+                    </td>
+                    <td class="whitespace-nowrap">
+                        {{ Number::currency($product->pivot->cost) }}
                     </td>
                 </tr>
             @endforeach

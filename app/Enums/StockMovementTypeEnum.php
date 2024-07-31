@@ -12,6 +12,8 @@ enum StockMovementTypeEnum: string implements HasLabel, HasColor, HasIcon
     case TRANSFER  = 'transfer';
     case ADJUSTMEN  = 'adjustmen';
     case SALE  = 'sale';
+    case SALE_REFUND  = 'sale_refund';
+    case SALE_CANCELLED  = 'sale_cancelled';
     case RETURN  = 'return';
 
 
@@ -22,6 +24,8 @@ enum StockMovementTypeEnum: string implements HasLabel, HasColor, HasIcon
             self::TRANSFER => 'Transferencia',
             self::ADJUSTMEN => 'Ajuste',
             self::SALE => 'Venta',
+            self::SALE_REFUND => 'Venta devolucion',
+            self::SALE_CANCELLED => 'Venta cancelada',
             self::RETURN => 'Devolucion',
         };
     }
@@ -33,6 +37,8 @@ enum StockMovementTypeEnum: string implements HasLabel, HasColor, HasIcon
             self::TRANSFER => 'info',
             self::ADJUSTMEN => 'gray',
             self::SALE => 'success',
+            self::SALE_REFUND => 'danger',
+            self::SALE_CANCELLED => 'danger',
             self::RETURN => 'danger',
         };
     }
@@ -44,6 +50,8 @@ enum StockMovementTypeEnum: string implements HasLabel, HasColor, HasIcon
             self::TRANSFER => 'heroicon-m-arrow-down',
             self::ADJUSTMEN => 'heroicon-m-arrow-down',
             self::SALE => 'heroicon-m-arrow-down',
+            self::SALE_REFUND => 'heroicon-m-receipt-refund',
+            self::SALE_CANCELLED => 'heroicon-m-x-circle',
             self::RETURN => 'heroicon-m-arrow-down',
         };
     }

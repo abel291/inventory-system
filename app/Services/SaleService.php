@@ -6,18 +6,20 @@ use App\Enums\StockMovementOperationEnum;
 use App\Enums\StockMovementTypeEnum;
 use App\Enums\StockStatuEnum;
 use App\Models\Product;
+use App\Models\Sale;
 use App\Models\Stock;
 use App\Models\StockEntry;
 use App\Models\StockMovement;
 use App\Models\StockTransfer;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 
 class SaleService
 {
-    public static function generateCode(): string
+    public static function generateCode($key = ''): string
     {
-
-        return strtoupper(now()->isoFormat('dd') . fake()->bothify('#####'));
+        $week = strtoupper(now()->isoFormat('dd'));
+        return $week . Str::padLeft($key . fake()->bothify('###'), 6, '0');
     }
 
     public static function calculateSubTotal($products): string
@@ -35,5 +37,24 @@ class SaleService
 
 
         return $subtotal;
+    }
+
+    public static function calculateTotal($sale): Sale
+    {
+
+        if ($sale->discount) {
+            $discount_amount =  $sale->subtotal * ($sale->discount['percent'] / 100);
+            $sale->discount = [
+                'percent' => $sale->discount['percent'],
+                'amount' => $discount_amount
+            ];
+            $subtotalWithDiscount = $sale->subtotal - $sale->discount['amount'];
+        } else {
+            $subtotalWithDiscount = $sale->subtotal;
+        }
+
+        $sale->total = ($subtotalWithDiscount + $sale->delivery);
+
+        return $sale;
     }
 }

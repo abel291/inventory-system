@@ -1,6 +1,6 @@
-<div>
-    <table class="table-list mt-5 ">
-        <thead class="">
+<div class="table-list-wrp">
+    <table class="table-list">
+        <thead>
             <tr>
                 <th>Codigo</th>
                 <th>Nombre</th>
@@ -18,14 +18,14 @@
                     <td>
                         {{ $product->name }}
                     </td>
-                    <td class=" px-3 py-2.5  text-right">
+                    <td>
                         {{ $product->pivot->quantity }}
                     </td>
-                    <td>
-                        $ {{ Number::format($product->price) }}
+                    <td class="whitespace-nowrap">
+                        {{ Number::currency($product->price) }}
                     </td>
-                    <td>
-                        $ {{ Number::format($product->price_wholesale) }}
+                    <td class="whitespace-nowrap">
+                        {{ Number::currency($product->price_wholesale) }}
                     </td>
                 </tr>
             @endforeach

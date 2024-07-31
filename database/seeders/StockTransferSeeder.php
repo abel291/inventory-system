@@ -61,7 +61,7 @@ class StockTransferSeeder extends Seeder
 
             StockService::stockTransfer($stockTransfer);
 
-            $this->command->info($stockTransfer->id);
+            $this->command->info("Traslado desde:$locationTo->name hasta:{$locationFrom->name}");
         }
     }
 }

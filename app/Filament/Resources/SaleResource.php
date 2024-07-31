@@ -43,7 +43,12 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -108,17 +113,15 @@ class SaleResource extends Resource
                 ->extraAttributes(['class' => 'label-total'])
                 ->columnSpanFull()
                 ->schema([
-                    Placeholder::make('label-sub-total')->label('sub total')->content(fn(Get $get) => "$ " . Number::format($get('subtotal'))),
-                    Placeholder::make('labe-discount.amount')->label(fn(Get $get) => "Descuento ({$get('discount.percent')}%)")
+                    Placeholder::make('label-sub-total')->label('sub total')->content(fn (Get $get) => "$ " . Number::format($get('subtotal'))),
+                    Placeholder::make('labe-discount.amount')->label(fn (Get $get) => "Descuento ({$get('discount.percent')}%)")
                         ->default(0)
-                        ->visible(fn(Get $get) => $get('discount.percent'))
-                        ->content(fn(Get $get) => "-$ " . Number::format($get('discount.amount'))),
+                        ->visible(fn (Get $get) => $get('discount.percent'))
+                        ->content(fn (Get $get) => "-$ " . Number::format($get('discount.amount'))),
                     Placeholder::make('label-delivery')->label('Envio')
                         ->default(0)
-                        ->content(fn(Get $get) => "$ " . Number::format($get('delivery'))),
-                    Placeholder::make('label-total')->label('Total')->content(fn(Get $get) => "$ " . Number::format($get('total'))),
-
-
+                        ->content(fn (Get $get) => "$ " . Number::format($get('delivery'))),
+                    Placeholder::make('label-total')->label('Total')->content(fn (Get $get) => "$ " . Number::format($get('total'))),
                 ])
         ];
     }
@@ -127,18 +130,20 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('code')->label('Numero'),
-                TextColumn::make('client.name'),
-                TextColumn::make('sale_products_count')->label('Productos')
-                    ->counts('saleProducts'),
-                TextColumn::make('delivery')->label('Costo de envio')->numeric()->prefix('$'),
-                TextColumn::make('total')->label('Precio Total')->numeric()->prefix('$'),
+                TextColumn::make('code')->label('Numero')->searchable(),
+                TextColumn::make('client.name')->searchable(),
+                TextColumn::make('sale_products_count')->label('Productos')->counts('saleProducts'),
+                TextColumn::make('delivery')->label('Costo de envio')->numeric()->money(locale: 'de'),
+                TextColumn::make('total')->label('Precio Total')->numeric()->money(locale: 'de'),
                 TextColumn::make('status')->badge(),
                 TextColumn::make('payment_type')->label('Tipo de pago')->badge(),
                 TextColumn::make('created_at')->label('Fecha de la venta')->dateTime(),
+
             ])
             ->filters([
-                //
+                SelectFilter::make('payment_type')->label('Tipo de pago')->options(SalePaymentTypeEnum::class),
+
+
             ])
             ->actions([
                 // Tables\Actions\EditAction::make()->icon(null),
@@ -148,7 +153,12 @@ class SaleResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->filtersTriggerAction(
+                fn (Action $action) => $action
+                    ->button()
+                    ->label('Filtros'),
+            );;
     }
 
     public static function getRelations(): array

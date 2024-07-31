@@ -4,7 +4,11 @@ namespace App\Providers;
 
 use App\Listeners\DisableForeignKeyMigrations;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
@@ -33,14 +37,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        Number::useLocale('cop');
+        Number::useLocale('de');
+
         Event::listen(
             DisableForeignKeyMigrations::class,
         );
 
         Model::unguard();
-
-        // Table::$defaultNumberLocale = 'nl';
 
         EditAction::configureUsing(function (EditAction $action): void {
             $action->color('info')->icon(false);
@@ -49,15 +52,23 @@ class AppServiceProvider extends ServiceProvider
         DeleteAction::configureUsing(function (DeleteAction $action): void {
             $action->icon(false);
         }, isImportant: true);
-        ViewAction::configureUsing(function (ViewAction $action): void {
+        ViewAction::configureUsing(function (ViewAction $action,): void {
             $action->icon(false);
         }, isImportant: true);
+
+        // TextEntry::configureUsing(function (TextEntry $entry): void {
+        //     $entry->defaulT;
+        // });
 
         Table::configureUsing(function (Table $table): void {
             $table->defaultPaginationPageOption(25)->defaultSort('id', 'desc');
             // $table->filtersLayout(FiltersLayout::AboveContent);
             $table->searchDebounce('400ms');
         });
+
+        Infolist::$defaultDateTimeDisplayFormat = 'M j, Y h:i a';
+
+        Table::$defaultDateTimeDisplayFormat = 'M j, Y h:i a';
 
         Select::configureUsing(function (Select $component): void {
             $component->native(false);

@@ -25,17 +25,17 @@ enum SaleStatuEnum: string implements HasLabel, HasColor, HasIcon
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::REFUNDED => 'warning',
             self::ACCEPTED => 'success',
-            self::CANCELLED => 'danger',
+            self::REFUNDED => 'danger',
+            self::CANCELLED => 'gray',
         };
     }
 
     public function getIcon(): string
     {
         return match ($this) {
-            self::REFUNDED => 'heroicon-s-receipt-refund',
-            self::ACCEPTED => 'heroicon-s-check-circle',
+            self::REFUNDED => 'heroicon-m-receipt-refund',
+            self::ACCEPTED => 'heroicon-m-check-circle',
             self::CANCELLED => 'heroicon-m-x-circle',
         };
     }

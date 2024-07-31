@@ -16,6 +16,7 @@ use App\Services\StockService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Number;
 
 class StockEntrySeeder extends Seeder
 {
@@ -31,7 +32,7 @@ class StockEntrySeeder extends Seeder
         DB::table('stock_entry_product')->truncate();
 
         $locations = Location::select('id')->get();
-        $users = User::select('id')->get();
+        $users = User::select('id', 'name')->get();
         $products = Product::select('id', 'price')->inRandomOrder()->get();
 
         foreach ($products->chunk(20)->multiply(3) as $products_chunk) {
@@ -56,7 +57,7 @@ class StockEntrySeeder extends Seeder
 
                 StockService::stockEntryAddition($stockEntry);
 
-                $this->command->info('Entrada:' . $stockEntry->id);
+                $this->command->info("Entrada:{$location->name} - " . Number::currency(collect($productsEntry)->sum('cost')));
             }
         }
     }

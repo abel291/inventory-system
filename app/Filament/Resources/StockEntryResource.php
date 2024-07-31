@@ -4,10 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Enums\StockStatuEnum;
 use App\Filament\Resources\StockEntryResource\Pages\CreateStockEntry;
+use App\Filament\Resources\StockEntryResource\Pages\EditStockEntry;
 use App\Filament\Resources\StockEntryResource\Pages\ListStockEntry;
 use App\Filament\Resources\StockEntryResource\Pages\ManageStockEntryProducts;
 use App\Filament\Resources\StockEntryResource\Pages\ViewStockEntry;
 use App\Filament\Resources\StockResource\Pages;
+use App\Filament\Resources\StockResource\Pages\EditStock;
+
 use App\Models\Location;
 use App\Models\Product;
 use App\Models\Stock;
@@ -29,8 +32,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-
-
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Support\Collection;
 
@@ -59,7 +61,6 @@ class StockEntryResource extends Resource implements HasShieldPermissions
 
     public static function form(Form $form): Form
     {
-
         return $form
             ->schema([
 
@@ -77,11 +78,12 @@ class StockEntryResource extends Resource implements HasShieldPermissions
                         ]);
                     })
                     ->options(Location::all()->pluck('nameType', 'id')),
-                Forms\Components\Grid::make()->columns(2),
+                Textarea::make('note')->label('Observacion')->columnSpan(2),
 
                 Forms\Components\Repeater::make('stockEntryProducts')
                     ->hidden(fn(Get $get): bool => !$get('location_id'))
                     ->relationship()
+                    ->columnSpanFull()
                     ->required()
                     ->label('Productos')
                     ->schema([
@@ -89,24 +91,13 @@ class StockEntryResource extends Resource implements HasShieldPermissions
                             ->label('Nombre del producto')
                             ->live()
                             ->placeholder('Codigo de barra o nombre del producto')
-                            ->relationship(
-                                name: 'product',
-                                titleAttribute: 'name',
-                                // modifyQueryUsing: fn (Builder $query, Get $get) => $query
-                                //     ->with('locations')
-                                //     ->whereHas('locations', function (Builder $query) use ($get) {
-                                //         $query->where('location_id', $get('../../location_id'));
-                                //     }),
-                            )
-                            ->searchable(['name', 'barcode'])
+                            ->options(Product::select('id', 'name', 'price', 'barcode')->active()->get()->pluck('nameBarcode', 'id'))
+                            ->preload()
+                            ->searchable()
                             ->getOptionLabelFromRecordUsing(function (Product $record) {
                                 return "{$record->nameBarcodePrice}";
                             })
                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                            // ->preload()
-                            // ->options(Product::select('id', 'name', 'barcode', 'price')->get()->pluck('nameBarcodePrice', 'id'))
-
-                            // ->searchable()
                             ->afterStateUpdated(function (Get $get, Set $set, $state) {
                                 $stock = Stock::where([
                                     ['product_id', $state],
@@ -132,7 +123,7 @@ class StockEntryResource extends Resource implements HasShieldPermissions
                             ->numeric()
                             ->minValue(1),
                         Forms\Components\TextInput::make('cost')
-                            ->label('Costo')
+                            ->label('Costo (por unidad)')
                             ->required()
                             ->prefix('$')
                             ->numeric()
@@ -164,11 +155,7 @@ class StockEntryResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('products_sum_stock_entry_productcost')->sum('products', 'stock_entry_product.cost')
                     ->money()
                     ->label('Coste Total'),
-
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Creado')
-                    ->searchable()
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('updated_at')->label('Fecha de creacion')->dateTime()->toggleable(isToggledHiddenByDefault: true)
 
             ])
             ->modifyQueryUsing(function (Builder $query) {
@@ -181,10 +168,10 @@ class StockEntryResource extends Resource implements HasShieldPermissions
                         ->preload()->label('Ubicacion')
                 ]
             )
-
             ->actions([
+                // Tables\Actions\EditAction::make()->label('Editar')
+                //     ->visible(fn(StockEntry $record) => $record->status == StockStatuEnum::PENDING),
                 Tables\Actions\ViewAction::make()->label('Ver productos'),
-
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -208,8 +195,6 @@ class StockEntryResource extends Resource implements HasShieldPermissions
             // SelectFilter::make('products.category')
             //     ->relationship('products.category', 'name')
             //     ->preload()->label('Categoria'),
-
-
         ];
     }
 
@@ -219,6 +204,7 @@ class StockEntryResource extends Resource implements HasShieldPermissions
             'index' => ListStockEntry::route('/'),
             'create' => CreateStockEntry::route('/create'),
             'view' => ViewStockEntry::route('/{record}'),
+            // 'edit' => EditStockEntry::route('/{record}/edit'),
             'products' => ManageStockEntryProducts::route('/{record}/products'),
         ];
     }

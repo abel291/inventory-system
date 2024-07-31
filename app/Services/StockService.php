@@ -2,13 +2,17 @@
 
 namespace App\Services;
 
+use App\Enums\SaleStatuEnum;
 use App\Enums\StockMovementOperationEnum;
 use App\Enums\StockMovementTypeEnum;
 use App\Enums\StockStatuEnum;
+use App\Models\Sale;
 use App\Models\Stock;
 use App\Models\StockEntry;
+use App\Models\StockEntryProduct;
 use App\Models\StockMovement;
 use App\Models\StockTransfer;
+use App\Models\StockTransferProduct;
 use Illuminate\Support\Facades\Artisan;
 
 class StockService
@@ -19,10 +23,9 @@ class StockService
         if ($stockEntry->status != StockStatuEnum::ACCEPTED) {
             return;
         }
-        ;
+
 
         foreach ($stockEntry->products as $product) {
-
             StockMovement::create([
                 'location_id' => $stockEntry->location_id,
                 'product_id' => $product->id,
@@ -59,7 +62,49 @@ class StockService
                 'operation' => StockMovementOperationEnum::ADDITION,
                 'quantity' => $product->pivot->quantity,
             ]);
-
         }
     }
+    public static function sale(Sale $sale)
+    {
+        foreach ($sale->saleProducts as $item) {
+
+            $type_opeation = [];
+            switch ($sale->status) {
+                case SaleStatuEnum::ACCEPTED:
+                    $type_opeation = [
+                        'type' => StockMovementTypeEnum::SALE,
+                        'operation' => StockMovementOperationEnum::SUBTRACTION,
+                    ];
+                    break;
+                case SaleStatuEnum::CANCELLED:
+                    $type_opeation = [
+                        'type' => StockMovementTypeEnum::SALE_CANCELLED,
+                        'operation' => StockMovementOperationEnum::ADDITION,
+                    ];
+                    break;
+                case SaleStatuEnum::REFUNDED:
+                    $type_opeation = [
+                        'type' => StockMovementTypeEnum::SALE_REFUND,
+                        'operation' => StockMovementOperationEnum::ADDITION,
+                    ];
+                    break;
+            }
+
+            $stock = StockMovement::create([
+                'location_id' => $sale->location_id,
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity,
+                ...$type_opeation
+            ]);
+        }
+    }
+    public function refreshStock($product_id, $location_id)
+    {
+        $stockEntryProduct = StockEntryProduct::where('product_id', $product_id)
+            ->whereRelation('stockEntry', 'location_id', $location_id)->sum('quantity');
+
+        $stockEntryProduct = StockTransferProduct::where('product_id', $product_id)
+            ->whereRelation('stockTransfer', 'location_to_id', $location_id)->sum('quantity');
+    }
 }
+

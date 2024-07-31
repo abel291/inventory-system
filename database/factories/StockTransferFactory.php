@@ -21,7 +21,7 @@ class StockTransferFactory extends Factory
     {
         $status = fake()->randomElement(StockStatuEnum::cases());
         return [
-            'status' => $status,
+            'status' => StockStatuEnum::ACCEPTED,
             'status_at' => $status != StockStatuEnum::PENDING ? now() : null,
             'note' => fake()->randomElement([null, fake()->sentence()]),
             'location_from_id' => Location::factory(),

@@ -17,67 +17,67 @@ use Illuminate\Support\Str;
 
 class CategoryResource extends Resource
 {
-	protected static ?string $model = Category::class;
+    protected static ?string $model = Category::class;
 
-	protected static ?string $navigationIcon = 'heroicon-o-tag';
-	public static ?string $label = 'Categoria';
-	protected static ?string $pluralModelLabel  = 'Categorias';
-	protected static ?string $navigationGroup  = 'Inventario';
+    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    public static ?string $label = 'Categoria';
+    protected static ?string $pluralModelLabel  = 'Categorias';
+    protected static ?string $navigationGroup  = 'Inventario';
 
-	public static function getNavigationBadge(): ?string
-	{
-		return static::getModel()::count();
-	}
-	public static function form(Form $form): Form
-	{
-		return $form
-			->schema([
-				Forms\Components\TextInput::make('name')
-					->live()
-					->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
-					->required(),
-				Forms\Components\TextInput::make('slug')
-					->disabled(),
-				Forms\Components\FileUpload::make('img')->image()
-					->required(),
-			]);
-	}
+    // public static function getNavigationBadge(): ?string
+    // {
+    // 	return static::getModel()::count();
+    // }
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\TextInput::make('name')
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->required(),
+                Forms\Components\TextInput::make('slug')
+                    ->disabled(),
+                Forms\Components\FileUpload::make('img')->image()
+                    ->required(),
+            ]);
+    }
 
-	public static function table(Table $table): Table
-	{
-		return $table
-			->columns([
-				Tables\Columns\ImageColumn::make('img'),
-				Tables\Columns\TextColumn::make('name')
-					->searchable(),
-				Tables\Columns\TextColumn::make('products_count')
-					->counts('products')
-					->badge()
-					->label('Productos'),
-				Tables\Columns\TextColumn::make('updated_at')
-					->label('Modificado')
-					->since(),
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\ImageColumn::make('img'),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('products_count')
+                    ->counts('products')
+                    ->badge()
+                    ->label('Productos'),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Modificado')
+                    ->since(),
 
 
-			])
-			->filters([
-				//
-			])
-			->actions([
-				Tables\Actions\EditAction::make()->icon(null)->icon(false),
-				Tables\Actions\DeleteAction::make()->icon(false),
-			])
-			->bulkActions([
-				Tables\Actions\BulkActionGroup::make([
-					// Tables\Actions\DeleteBulkAction::make(),
-				]),
-			])->defaultPaginationPageOption(25);
-	}
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make()->icon(null)->icon(false),
+                Tables\Actions\DeleteAction::make()->icon(false),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    // Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ])->defaultPaginationPageOption(25);
+    }
 
-	public static function getPages(): array
-	{
-		return [
-			'index' => Pages\ManageCategories::route('/'),
-		];
-	}
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ManageCategories::route('/'),
+        ];
+    }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 20);
+            $table->string('code', 20)->unique()->index();
             $table->string('status')->default(SaleStatuEnum::ACCEPTED->value);
             $table->string('payment_type')->default(SalePaymentTypeEnum::CASH->value);
             $table->decimal('subtotal', 12, 2)->default(0);
@@ -30,7 +30,6 @@ return new class extends Migration
             $table->foreignId('contact_id')->constrained()->cascadeOnDelete();
             $table->foreignId('location_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); //vendedor
-
 
             $table->timestamps();
         });

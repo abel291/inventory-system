@@ -6,7 +6,9 @@ use App\Enums\SalePaymentTypeEnum;
 use App\Filament\Resources\SaleResource;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Models\StockMovement;
 use App\Services\SaleService;
+use App\Services\StockService;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
@@ -68,6 +70,8 @@ class CreateSale extends CreateRecord
             // dd($payment);
             $sale->payments()->create($payment);
         }
+
+        StockService::sale($sale);
 
         return $sale;
     }

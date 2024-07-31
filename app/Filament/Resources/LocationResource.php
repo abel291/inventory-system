@@ -22,8 +22,8 @@ class LocationResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
 
     public static ?string $label = 'Ubicacion';
-    protected static ?string $pluralModelLabel  = 'Ubicaciones';
-    protected static ?string $navigationGroup  = 'Inventario';
+    protected static ?string $pluralModelLabel = 'Ubicaciones';
+    protected static ?string $navigationGroup = 'Inventario';
 
     public static function form(Form $form): Form
     {
@@ -56,7 +56,7 @@ class LocationResource extends Resource
 
                 Tables\Columns\TextColumn::make('nameType')
                     ->translateLabel()
-                    // ->description(fn (Location $record): string => $record->type->getLabel())
+                    ->description(fn(Location $record): string => $record->address)
                     ->wrap()
                     ->searchable(),
                 // Tables\Columns\TextColumn::make('phone')
@@ -70,13 +70,11 @@ class LocationResource extends Resource
                     ->label('Total unidades')
                     ->numeric()
                     ->getStateUsing(function (Location $record) {
-
                         return $record->stock->sum('quantity');
                     }),
                 Tables\Columns\IconColumn::make('active')
                     ->translateLabel()
                     ->boolean(),
-
 
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Fecha de modificacion')

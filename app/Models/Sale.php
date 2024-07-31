@@ -50,4 +50,14 @@ class Sale extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function totalPayments(): int
+    {
+        return $this->payments()->sum('amount');
+    }
+
+    public function pendingPayments(): int
+    {
+        return ($this->total - $this->totalPayments());
+    }
 }

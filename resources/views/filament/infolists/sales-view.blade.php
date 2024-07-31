@@ -1,41 +1,43 @@
 <div>
-    <table class="table-list mt-5">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($getState() as $product)
+    <div class=" table-list-wrp">
+        <table class="table-list">
+            <thead>
                 <tr>
-                    <td>
-                        {{ $product->name }}
-                    </td>
-                    <td>
-                        $ {{ Number::format($product->pivot->price, 2) }}
-                    </td>
-                    <td align="center">
-                        {{ $product->pivot->quantity }}
-                    </td>
-                    <td>
-                        $ {{ Number::format($product->pivot->total, 2) }}
-                    </td>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach ($getState() as $product)
+                    <tr>
+                        <td>
+                            {{ $product->name }}
+                        </td>
+                        <td class="whitespace-nowrap">
+                            {{ Number::currency($product->pivot->price, locale: 'de') }}
+                        </td>
+                        <td align="center">
+                            {{ $product->pivot->quantity }}
+                        </td>
+                        <td class="whitespace-nowrap">
+                            {{ Number::currency($product->pivot->total, locale: 'de') }}
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
-    <div class="pt-10 flex justify-end border-t border-neutral-200 dark:border-white/20">
+    <div class="pt-8 flex justify-end ">
         <dl class="sm:max-w-sm w-80 font-medium text-sm space-y-5 ">
-            <x-descripction-list title="Sub total" :description="'$ ' . Number::format($getRecord()->subtotal, 2)" />
+            <x-descripction-list title="Sub total" :description="Number::currency($getRecord()->subtotal)" />
             @if ($getRecord()->discount)
-                <x-descripction-list title="Descuento" :description="'-$ ' . Number::format($getRecord()->discount['amount'], 2)" />
+                <x-descripction-list :title="'Descuento ' . $getRecord()->discount['percent'] . '%'" :description="'-$ ' . Number::format($getRecord()->discount['amount'])" />
             @endif
-            <x-descripction-list title="Envio" :description="'$ ' . Number::format($getRecord()->delivery, 2)" />
-            <x-descripction-list title="Total" :description="'$ ' . Number::format($getRecord()->total, 2)" />
+            <x-descripction-list title="Envio" :description="Number::currency($getRecord()->delivery)" />
+            <x-descripction-list title="Total" :description="Number::currency($getRecord()->total, in: 'USD', locale: 'de')" />
         </dl>
     </div>
 

@@ -5,23 +5,39 @@
 .fi-input-wrp {
     @apply rounded;
 }
+.fi-btn,
+.fi-sidebar-item-button,
+.fi-tabs-item {
+    @apply rounded-md;
+}
+.fi-section,
+.fi-wi-stats-overview-stat,
+.fi-ta-ctn,
+.fi-tabs {
+    @apply rounded-lg;
+}
+.table-list-wrp {
+    @apply border mt-5 rounded-md overflow-hidden dark:border-white/10;
+}
 .table-list {
-    @apply w-full leading-6;
+    @apply w-full leading-6 text-sm;
 }
-.table-list tr {
-    @apply text-sm;
+.table-list thead {
+    @apply bg-gray-50 dark:bg-white/5;
 }
+
 .table-list tbody {
     @apply border-t border-gray-300 dark:border-white/10 divide-y divide-gray-200 dark:divide-white/5;
 }
-.table-list tbody tr {
-    @apply hover:bg-gray-50 dark:hover:bg-white/5;
-}
+
 .table-list tr th {
-    @apply pb-3.5 px-2 text-start text-sm font-medium text-neutral-500 dark:text-neutral-400;
+    @apply py-2.5 px-2 text-start text-sm font-normal;
+}
+.table-list tr td:first-child {
+    @apply text-black dark:text-white font-medium;
 }
 .table-list tr td {
-    @apply py-3;
+    @apply py-4 px-3 text-gray-500 dark:text-gray-300;
 }
 .table-list tr th:last-child {
     @apply text-right;
@@ -29,13 +45,17 @@
 .table-list tbody tr td:last-child {
     @apply text-right;
 }
+/* .table-list tr th,
+.table-list tr td {
+    @apply px-3 py-3.5;
+} */
 .table-list tr th:first-child,
 .table-list tr td:first-child {
-    @apply pr-4;
+    @apply pl-6;
 }
 .table-list tr th:last-child,
 .table-list tr td:last-child {
-    @apply pl-4;
+    @apply pr-6;
 }
 
 .label-total .fi-fo-field-wrp > div {
@@ -51,6 +71,19 @@
 .label-total > div {
     @apply gap-3;
 }
+.fi-in-entry-wrp > div {
+    @apply gap-y-1;
+}
+
+.fi-in-text-item > div {
+    @apply text-gray-700 dark:text-gray-400;
+}
+/* .entry-inline-wrp .fi-fo-component-ctn {
+    @apply gap-4;
+}
+.entry-inline-wrp .fi-in-entry-wrp > div {
+    @apply flex justify-between;
+} */
 /*
 .fi-ta-ctn,
 .fi-sidebar-item-button,

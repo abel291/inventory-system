@@ -93,7 +93,7 @@ class StockEntryResource extends Resource implements HasShieldPermissions
                             ->placeholder('Codigo de barra o nombre del producto')
                             ->options(Product::select('id', 'name', 'price', 'barcode')->active()->get()->pluck('nameBarcode', 'id'))
                             ->preload()
-                            ->searchable()
+                            ->searchable(['name', 'barcode'])
                             ->getOptionLabelFromRecordUsing(function (Product $record) {
                                 return "{$record->nameBarcodePrice}";
                             })

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\WorkerResource\Pages;
+use App\Filament\Resources\WorkerResource\Pages\ManageWorkerPayrolls;
 use App\Filament\Resources\WorkerResource\RelationManagers;
 use App\Models\Worker;
 use Filament\Forms;
@@ -21,8 +22,8 @@ class WorkerResource extends Resource
     protected static ?string $model = Worker::class;
 
     public static ?string $label = 'Empleado';
-    protected static ?string $pluralModelLabel  = 'Empleados';
-    protected static ?string $navigationGroup  = 'Empleados';
+    protected static ?string $pluralModelLabel = 'Empleados';
+    protected static ?string $navigationGroup = 'Empleados';
     protected static ?string $navigationIcon = 'icon-worker';
 
     public static function form(Form $form): Form
@@ -43,12 +44,11 @@ class WorkerResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Nombre')
-                    ->description(fn (Worker $record) => $record->email)
+                    ->description(fn(Worker $record) => $record->email)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nit')->numeric()->label('Nit/Cedula')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('address')->wrap()->label('Direccion')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('address')->wrap()->label('Direccion'),
                 Tables\Columns\TextColumn::make('phone')->label('Telefono')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')->label('Fecha de creacion')
@@ -66,8 +66,8 @@ class WorkerResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
-                Tables\Actions\Action::make('payrolls')
-                    ->url(fn (Worker $record): string => route('filament.admin.resources.payrolls.index'))
+                Tables\Actions\Action::make('payrolls')->label('Nomina')
+                    ->url(fn(Worker $record): string => ManageWorkerPayrolls::getUrl(['record' => $record->id]))
 
             ])
             ->bulkActions([

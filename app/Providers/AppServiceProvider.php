@@ -52,8 +52,8 @@ class AppServiceProvider extends ServiceProvider
         DeleteAction::configureUsing(function (DeleteAction $action): void {
             $action->icon(false);
         }, isImportant: true);
-        ViewAction::configureUsing(function (ViewAction $action,): void {
-            $action->icon(false);
+        ViewAction::configureUsing(function (ViewAction $action, ): void {
+            $action->icon(false)->label('Ver registro');
         }, isImportant: true);
 
         // TextEntry::configureUsing(function (TextEntry $entry): void {
@@ -69,6 +69,7 @@ class AppServiceProvider extends ServiceProvider
         Infolist::$defaultDateTimeDisplayFormat = 'M j, Y h:i a';
 
         Table::$defaultDateTimeDisplayFormat = 'M j, Y h:i a';
+        DateTimePicker::$defaultDateTimeDisplayFormat = 'M j, Y h:i a';
 
         Select::configureUsing(function (Select $component): void {
             $component->native(false);

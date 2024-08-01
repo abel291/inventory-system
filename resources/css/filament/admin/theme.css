@@ -10,6 +10,9 @@
 .fi-tabs-item {
     @apply rounded-md;
 }
+.fi-simple-main {
+    @apply sm:rounded-md !important;
+}
 .fi-section,
 .fi-wi-stats-overview-stat,
 .fi-ta-ctn,

@@ -18,15 +18,16 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            CategorySeeder::class,
-            ProductSeeder::class,
+            WorkerSeeder::class,
+            // CategorySeeder::class,
+            // ProductSeeder::class,
             LocationSeeder::class,
             ContactSeeder::class,
             ExpenseSeeder::class,
-            StockEntrySeeder::class,
-            StockTransferSeeder::class,
-            PaymentMethodSeeder::class,
-            SaleSeeder::class,
+            // StockEntrySeeder::class,
+            // StockTransferSeeder::class,
+            // PaymentMethodSeeder::class,
+            // SaleSeeder::class,
 
         ]);
     }

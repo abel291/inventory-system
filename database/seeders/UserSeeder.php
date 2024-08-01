@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Payroll;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -45,8 +46,9 @@ class UserSeeder extends Seeder
 
         $user_regular->assignRole('cashier');
 
-        User::factory(2)->create()->each(function (User $user) {
-            $user->assignRole('cashier');
-        });
+        User::factory(5)
+            ->create()->each(function (User $user) {
+                $user->assignRole('cashier');
+            });
     }
 }

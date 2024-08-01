@@ -61,7 +61,7 @@ class AppServiceProvider extends ServiceProvider
         // });
 
         Table::configureUsing(function (Table $table): void {
-            $table->defaultPaginationPageOption(25)->defaultSort('id', 'desc');
+            $table->defaultPaginationPageOption(10)->defaultSort('id', 'desc');
             // $table->filtersLayout(FiltersLayout::AboveContent);
             $table->searchDebounce('400ms');
         });

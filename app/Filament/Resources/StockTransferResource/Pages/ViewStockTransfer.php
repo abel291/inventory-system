@@ -40,7 +40,6 @@ class ViewStockTransfer extends ViewRecord
                     Action::make('status-accepted')
                         ->color('success')
                         ->icon('heroicon-o-check-circle')
-                        ->visible(fn ($record) => ($record->status == StockStatuEnum::PENDING && $userCanChangeStatus))
                         ->label('Aceptar mercancia')
                         ->requiresConfirmation()
                         ->modalIcon('heroicon-o-check')
@@ -60,11 +59,10 @@ class ViewStockTransfer extends ViewRecord
                     Action::make('status-rejected')
                         ->color('danger')
                         ->icon('heroicon-o-x-circle')
-                        ->visible(fn ($record) => ($record->status == StockStatuEnum::PENDING && $userCanChangeStatus))
                         ->label('Rechazar mercancia')
                         ->requiresConfirmation()
                         ->modalIcon('heroicon-o-x-mark')
-                        ->action(function (StockEntry $record) {
+                        ->action(function (StockTransfer $record) {
                             $record->status = StockStatuEnum::REJECTED;
                             $record->status_at = now();
                             $record->save();
@@ -74,15 +72,19 @@ class ViewStockTransfer extends ViewRecord
                                 ->send();
                         })
 
-                ])->alignment(Alignment::End),
+                ])
+                    ->visible(fn($record) => ($record->status == StockStatuEnum::PENDING && $userCanChangeStatus))
+                    ->alignment(Alignment::End),
                 Split::make([
                     Section::make([
-                        TextEntry::make('locationFrom.nameType')->label('Origen')->columnSpan(2),
-                        TextEntry::make('locationTo.nameType')->label('Destino')->columnSpan(2),
-                        TextEntry::make('userRequest.name')->label('Quien Solicita'),
-                        // TextEntry::make('userApprove.name')->label('Quien Aprueba')->default('--'),
+                        TextEntry::make('locationFrom.nameType')->label('Origen')
+                        ,
+                        TextEntry::make('locationTo.nameType')->label('Destino')
+                        ,
+                        TextEntry::make('userRequest.name')->label('Quien Solicita')->columnStart(1),
+                        TextEntry::make('userApprove.name')->label('Quien Aprueba')->placeholder('--'),
 
-                        // TextEntry::make('status')->label('Estado')->badge(),
+                        TextEntry::make('status')->label('Estado')->badge(),
                         ViewEntry::make('products')->columnSpanFull()->view('filament.infolists.stock-transfer-product-list')
                     ])->columns(4),
                     Section::make([

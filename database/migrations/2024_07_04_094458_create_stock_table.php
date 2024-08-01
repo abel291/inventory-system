@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -23,7 +22,7 @@ return new class extends Migration
 
         Schema::create('stock_entries', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->default(StockStatuEnum::ACCEPTED->value); //aprobado pendiente rechazado
+            $table->string('status')->default(StockStatuEnum::PENDING->value); //aprobado pendiente rechazado
             $table->timestamp('status_at')->nullable(); // cambio de status
             $table->string('note')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); //responsable
@@ -42,7 +41,7 @@ return new class extends Migration
 
         Schema::create('stock_transfers', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->default(StockStatuEnum::ACCEPTED->value); //aprobado pendiente rechazado
+            $table->string('status')->default(StockStatuEnum::PENDING->value); //aprobado pendiente rechazado
             $table->timestamp('status_at')->nullable(); // cambio de status
             $table->string('note')->nullable();
             $table->foreignId('user_request_id')->constrained()->cascadeOnDelete(); //quien solicitante
@@ -59,6 +58,8 @@ return new class extends Migration
             $table->unsignedMediumInteger('quantity');
             $table->timestamps();
         });
+
+
 
         Schema::create('stock_adjustments', function (Blueprint $table) {
             $table->id();

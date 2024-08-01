@@ -67,6 +67,11 @@ class SaleResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Ventas';
 
+    public static function getNavigationBadge(): ?string
+    {
+        return 'hoy ' . static::getModel()::whereDate('created_at', now()->setTime(0, 0))->count();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -113,15 +118,15 @@ class SaleResource extends Resource
                 ->extraAttributes(['class' => 'label-total'])
                 ->columnSpanFull()
                 ->schema([
-                    Placeholder::make('label-sub-total')->label('sub total')->content(fn (Get $get) => "$ " . Number::format($get('subtotal'))),
-                    Placeholder::make('labe-discount.amount')->label(fn (Get $get) => "Descuento ({$get('discount.percent')}%)")
+                    Placeholder::make('label-sub-total')->label('sub total')->content(fn(Get $get) => "$ " . Number::format($get('subtotal'))),
+                    Placeholder::make('labe-discount.amount')->label(fn(Get $get) => "Descuento ({$get('discount.percent')}%)")
                         ->default(0)
-                        ->visible(fn (Get $get) => $get('discount.percent'))
-                        ->content(fn (Get $get) => "-$ " . Number::format($get('discount.amount'))),
+                        ->visible(fn(Get $get) => $get('discount.percent'))
+                        ->content(fn(Get $get) => "-$ " . Number::format($get('discount.amount'))),
                     Placeholder::make('label-delivery')->label('Envio')
                         ->default(0)
-                        ->content(fn (Get $get) => "$ " . Number::format($get('delivery'))),
-                    Placeholder::make('label-total')->label('Total')->content(fn (Get $get) => "$ " . Number::format($get('total'))),
+                        ->content(fn(Get $get) => "$ " . Number::format($get('delivery'))),
+                    Placeholder::make('label-total')->label('Total')->content(fn(Get $get) => "$ " . Number::format($get('total'))),
                 ])
         ];
     }
@@ -131,18 +136,32 @@ class SaleResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('code')->label('Numero')->searchable(),
-                TextColumn::make('client.name')->searchable(),
+                TextColumn::make('client.name')->wrap()->searchable(),
                 TextColumn::make('sale_products_count')->label('Productos')->counts('saleProducts'),
                 TextColumn::make('delivery')->label('Costo de envio')->numeric()->money(locale: 'de'),
                 TextColumn::make('total')->label('Precio Total')->numeric()->money(locale: 'de'),
                 TextColumn::make('status')->badge(),
                 TextColumn::make('payment_type')->label('Tipo de pago')->badge(),
-                TextColumn::make('created_at')->label('Fecha de la venta')->dateTime(),
-
+                TextColumn::make('created_at')->label('Fecha de la venta')
+                    ->sortable()->dateTime()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('payment_type')->label('Tipo de pago')->options(SalePaymentTypeEnum::class),
-
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from')->label('Fecha desde'),
+                        DatePicker::make('created_until')->label('Fecha hasta'),
+                    ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
 
             ])
             ->actions([
@@ -155,10 +174,11 @@ class SaleResource extends Resource
                 ]),
             ])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filtros'),
-            );;
+            );
+        ;
     }
 
     public static function getRelations(): array

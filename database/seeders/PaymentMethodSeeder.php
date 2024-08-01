@@ -14,6 +14,15 @@ class PaymentMethodSeeder extends Seeder
     public function run(): void
     {
         PaymentMethod::truncate();
-        PaymentMethod::factory()->count(8)->create();
+        PaymentMethod::create(['name' => 'Efectivo']);
+        PaymentMethod::create(['name' => 'Transferencias bancarias']);
+        PaymentMethod::create(['name' => 'Tarjeta de crédito']);
+        PaymentMethod::create(['name' => 'Tarjeta de débito']);
+        PaymentMethod::create(['name' => 'Pagos móviles']);
+        PaymentMethod::create(['name' => 'PSE (Pagos Seguros en Línea)']);
+        PaymentMethod::create(['name' => 'PayPal']);
+        PaymentMethod::create(['name' => 'Mercado Pago']);
+        PaymentMethod::create(['name' => 'Efecty']);
+        PaymentMethod::create(['name' => 'RapiPago']);
     }
 }

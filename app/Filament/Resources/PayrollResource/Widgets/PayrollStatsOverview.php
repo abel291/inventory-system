@@ -14,9 +14,8 @@ class PayrollStatsOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        $payrolls = Payroll::
-            whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)->get();
+        $payrolls = Payroll::whereMonth('payment_at', now()->month)
+            ->whereYear('payment_at', now()->year)->get();
 
         $chartSalesMonth = $payrolls->groupBy(function ($item) {
             return $item->created_at->format('Y-m-d');
@@ -27,7 +26,7 @@ class PayrollStatsOverview extends BaseWidget
         return [
             Stat::make('Nominas de ' . now()->isoFormat('MMMM'), $payrolls->count())
                 ->chart($chartSalesMonth),
-            Stat::make('Total pagos de nominas', Number::currency($payrolls->sum('amount'))),
+            Stat::make('Total nominas de ' .    now()->isoFormat('MMMM'), Number::currency($payrolls->sum('amount'))),
             // Stat::make('Venta promedio', Number::currency($payrolls->average('total'))),
         ];
     }

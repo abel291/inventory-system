@@ -46,14 +46,14 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
 
         EditAction::configureUsing(function (EditAction $action): void {
-            $action->color('info')->icon(false);
+            $action->icon(false);
         }, isImportant: true);
 
         DeleteAction::configureUsing(function (DeleteAction $action): void {
             $action->icon(false);
         }, isImportant: true);
-        ViewAction::configureUsing(function (ViewAction $action, ): void {
-            $action->icon(false)->label('Ver registro');
+        ViewAction::configureUsing(function (ViewAction $action,): void {
+            $action->icon(false)->label('Ver');
         }, isImportant: true);
 
         // TextEntry::configureUsing(function (TextEntry $entry): void {

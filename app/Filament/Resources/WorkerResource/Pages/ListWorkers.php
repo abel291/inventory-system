@@ -4,9 +4,9 @@ namespace App\Filament\Resources\WorkerResource\Pages;
 
 use App\Filament\Resources\WorkerResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ManageRecords;
+use Filament\Resources\Pages\ListRecords;
 
-class ManageWorkers extends ManageRecords
+class ListWorkers extends ListRecords
 {
     protected static string $resource = WorkerResource::class;
 

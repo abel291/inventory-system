@@ -54,7 +54,7 @@ class SaleSeeder extends Seeder
                 'contact_id' => $client->id,
                 'location_id' => $location->id,
                 'user_id' => $users->random()->id,
-                'created_at' => fake()->dateTimeBetween('-1 month', 'now'),
+                'created_at' => fake()->dateTimeBetween('-1 month', '+1 month'),
 
             ]);
 

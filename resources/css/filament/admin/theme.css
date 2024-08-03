@@ -78,7 +78,8 @@
     @apply gap-y-1;
 }
 
-.fi-in-text-item > div {
+.fi-in-text-item > div,
+.fi-fo-placeholder {
     @apply text-gray-700 dark:text-gray-400;
 }
 .fi-ta-text,
@@ -93,7 +94,7 @@
     @apply w-full;
 }
 .fi-ta-image img {
-    @apply w-full  max-w-full  object-contain h-14;
+    @apply w-full max-w-full object-contain h-14;
 }
 
 .fi-ta-actions .fi-link span {

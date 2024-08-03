@@ -5,17 +5,16 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\WorkerResource\Pages;
 use App\Filament\Resources\WorkerResource\Pages\ManageWorkerPayrolls;
 use App\Filament\Resources\WorkerResource\RelationManagers;
+use App\Filament\Resources\WorkerResource\RelationManagers\PayrollsRelationManager;
 use App\Models\Worker;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use PhpParser\Node\Stmt\Label;
 
 class WorkerResource extends Resource
 {
@@ -29,6 +28,7 @@ class WorkerResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(2)
             ->schema([
                 TextInput::make('name')->label('Nombre')->required(),
                 TextInput::make('nit')->label('Nit/Cedula')->prefixIcon('heroicon-s-identification')->required(),
@@ -43,18 +43,19 @@ class WorkerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Nombre')
-                    ->description(fn(Worker $record) => $record->email)
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nit')->numeric()->label('Nit/Cedula')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('address')->wrap()->label('Direccion'),
-                Tables\Columns\TextColumn::make('phone')->label('Telefono')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('name')->label('Nombre')->description(fn (Worker $record) => $record->email)->searchable(),
+                Tables\Columns\TextColumn::make('nit')->numeric()->label('Nit/Cedula')->searchable(),
+                Tables\Columns\TextColumn::make('address')->wrap()->label('Direccion')->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('phone')->label('Telefono')->searchable(),
+                Tables\Columns\TextColumn::make('payroll_last.amount')->label('Ultima nomina')->money()
+                    ->description(function ($record) {
+
+                        return  $record->payroll_last ? $record->payroll_last->payment_at->isoFormat('MMMM Y') : null;
+                    })->placeholder('No tiene nomina')->searchable(),
                 Tables\Columns\TextColumn::make('created_at')->label('Fecha de creacion')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('updated_at')->label('Fecha de modificacion')
                     ->dateTime()
                     ->sortable()
@@ -66,30 +67,34 @@ class WorkerResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
-                Tables\Actions\Action::make('payrolls')->label('Nomina')
-                    ->url(fn(Worker $record): string => ManageWorkerPayrolls::getUrl(['record' => $record->id]))
+                Tables\Actions\ViewAction::make()->label('Ver nomina'),
 
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
-
-    // public static function getRecordSubNavigation(Page $page): array
-    // {
-    //     return $page->generateNavigationItems([
-
-    //         Pages\ManageWorkerPayrolls::class,
-    //     ]);
-    // }
+    public static function getRelations(): array
+    {
+        return [
+            PayrollsRelationManager::class,
+        ];
+    }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageWorkers::route('/'),
-            'payrolls' => Pages\ManageWorkerPayrolls::route('/{record}/payrolls'),
+            'index' => Pages\ListWorkers::route('/'),
+            // 'create' => Pages\CreateWorker::route('/create'),
+            'view' => Pages\ViewWorker::route('/{record}'),
+            // 'payrolls' => Pages\ManageWorkerPayrolls::route('/{record}/payrolls'),
+            // 'edit' => Pages\EditWorker::route('/{record}/edit'),
         ];
+    }
+    public function viewAny(): bool
+    {
+        return false;
     }
 }

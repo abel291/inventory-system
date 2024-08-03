@@ -3,17 +3,12 @@
 namespace App\Providers;
 
 use App\Listeners\DisableForeignKeyMigrations;
-use Filament\Facades\Filament;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -56,10 +51,6 @@ class AppServiceProvider extends ServiceProvider
             $action->icon(false)->label('Ver');
         }, isImportant: true);
 
-        // TextEntry::configureUsing(function (TextEntry $entry): void {
-        //     $entry->defaulT;
-        // });
-
         Table::configureUsing(function (Table $table): void {
             $table->defaultPaginationPageOption(10)->defaultSort('id', 'desc');
             // $table->filtersLayout(FiltersLayout::AboveContent);
@@ -70,6 +61,8 @@ class AppServiceProvider extends ServiceProvider
 
         Table::$defaultDateTimeDisplayFormat = 'M j, Y h:i a';
         DateTimePicker::$defaultDateTimeDisplayFormat = 'M j, Y h:i a';
+
+        Table::$defaultNumberLocale = 'de';
 
         Select::configureUsing(function (Select $component): void {
             $component->native(false);

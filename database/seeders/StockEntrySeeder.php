@@ -57,7 +57,7 @@ class StockEntrySeeder extends Seeder
 
                 StockService::stockEntryAddition($stockEntry);
 
-                $this->command->info("Entrada:{$location->name} - " . Number::currency(collect($productsEntry)->sum('cost')));
+                $this->command->info("Generando entrada de mercancia - {$location->name} - " . Number::currency(collect($productsEntry)->sum('cost')));
             }
         }
     }

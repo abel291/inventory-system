@@ -24,7 +24,7 @@ class CategorySeeder extends Seeder
             $slug = Str::slug($item['category']);
             return Category::factory()->make([
                 'name' => $item['category'],
-                'slug' => $slug,
+                // 'slug' => $slug,
                 'img' => "img/categories/$slug.png",
                 'created_at' => now(),
                 'updated_at' => now(),

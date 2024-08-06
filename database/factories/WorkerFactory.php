@@ -23,6 +23,7 @@ class WorkerFactory extends Factory
             'nit' => fake()->numerify('########'),
             'address' => fake()->address(),
             'description' => fake()->sentence(),
+            'created_at' => fake()->dateTimeBetween('-12 month', '+1 month'),
 
         ];
     }

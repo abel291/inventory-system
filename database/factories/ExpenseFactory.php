@@ -20,7 +20,7 @@ class ExpenseFactory extends Factory
             'reason' => fake()->sentence(),
             'amount' => rand(10, 100) * 1000,
             'note' => fake()->sentence(),
-            'date' => fake()->dateTimeBetween('-30 days', '+30 days')
+            'created_at' => fake()->dateTimeBetween('-12 month', 'now'),
         ];
     }
 }

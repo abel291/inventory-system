@@ -26,6 +26,7 @@ class StockTransferFactory extends Factory
             'note' => fake()->randomElement([null, fake()->sentence()]),
             'location_from_id' => Location::factory(),
             'location_to_id' => Location::factory(),
+            'created_at' => fake()->dateTimeBetween('-12 month', 'now'),
         ];
     }
 }

@@ -22,7 +22,9 @@ class ContactFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),
-            'type' => 'client'
+            'type' => 'client',
+            'created_at' => fake()->dateTimeBetween('-12 month', 'now'),
+
         ];
     }
 }

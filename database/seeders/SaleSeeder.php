@@ -36,7 +36,7 @@ class SaleSeeder extends Seeder
         $locations = Location::get();
         $users = User::get();
         $paymetMethod = PaymentMethod::get();
-        foreach (Contact::where('type', ContactTypesEnum::CLIENT)->get() as $key => $client) {
+        foreach (Contact::where('type', ContactTypesEnum::CLIENT)->get()->multiply(2) as $key => $client) {
 
             $location = $locations->random();
             $sale = new Sale([
@@ -54,8 +54,7 @@ class SaleSeeder extends Seeder
                 'contact_id' => $client->id,
                 'location_id' => $location->id,
                 'user_id' => $users->random()->id,
-                'created_at' => fake()->dateTimeBetween('-1 month', '+1 month'),
-
+                'created_at' => fake()->dateTimeBetween('-12 month', '+1 month'),
             ]);
 
             $stock = Stock::with('product')->where([

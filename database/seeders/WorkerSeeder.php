@@ -16,11 +16,13 @@ class WorkerSeeder extends Seeder
     public function run(): void
     {
         Worker::truncate();
+        Payroll::truncate();
+
         $responsibles = User::get();
 
-        Worker::factory()->count(20)
+        Worker::factory()->count(10)
             ->has(
-                Payroll::factory()->recycle($responsibles)->count(rand(8, 14))
+                Payroll::factory()->recycle($responsibles)->count(rand(2, 3))
             )
             ->create();
     }

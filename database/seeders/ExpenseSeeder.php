@@ -14,11 +14,33 @@ class ExpenseSeeder extends Seeder
      */
     public function run(): void
     {
-        $type = ExpenseType::factory(8)->create();
+        ExpenseType::truncate();
+        Expense::truncate();
+
+        $expensesTypeArray = [
+            'Alquiler del espacio de trabajo',
+            'Gastos de suministros',
+            'Gastos de papelería y oficina',
+            'Mobiliario y maquinaria',
+            'Gastos de marketing y publicidad',
+            'Gastos de servicios profesionales independientes',
+            'Gastos generales de administración y dirección',
+            'Gastos de diseño web y software',
+            'Gastos de representación',
+            'Gastos de ocio, entretenimiento y bienestar',
+        ];
+
+
+        foreach ($expensesTypeArray as $value) {
+            ExpenseType::create(['name' => $value]);
+        }
+
+        $expensesType = ExpenseType::get();
+
         Expense::factory(32)
-            ->state(function (array $attributes) use ($type) {
+            ->state(function (array $attributes) use ($expensesType) {
                 return [
-                    'expense_type_id' => $type->random()->id
+                    'expense_type_id' => $expensesType->random()->id
                 ];
             })->create();
     }

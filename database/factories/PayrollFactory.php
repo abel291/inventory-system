@@ -22,9 +22,11 @@ class PayrollFactory extends Factory
         return [
             'note' => fake()->sentence(),
             'amount' => rand(1, 1000) * 1000,
-            'payment_at' => fake()->dateTimeBetween('-6 month', '+10 days'),
+            'payment_at' => fake()->dateTimeBetween('-12 month', 'now'),
             'worker_id' => Worker::factory(),
             'user_id' => User::factory(),
+            'created_at' => fake()->dateTimeBetween('-12 month', 'now'),
+
         ];
     }
 }

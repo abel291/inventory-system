@@ -118,15 +118,15 @@ class SaleResource extends Resource
                 ->extraAttributes(['class' => 'label-total'])
                 ->columnSpanFull()
                 ->schema([
-                    Placeholder::make('label-sub-total')->label('sub total')->content(fn(Get $get) => "$ " . Number::format($get('subtotal'))),
-                    Placeholder::make('labe-discount.amount')->label(fn(Get $get) => "Descuento ({$get('discount.percent')}%)")
+                    Placeholder::make('label-sub-total')->label('sub total')->content(fn (Get $get) => "$ " . Number::format($get('subtotal'))),
+                    Placeholder::make('labe-discount.amount')->label(fn (Get $get) => "Descuento ({$get('discount.percent')}%)")
                         ->default(0)
-                        ->visible(fn(Get $get) => $get('discount.percent'))
-                        ->content(fn(Get $get) => "-$ " . Number::format($get('discount.amount'))),
+                        ->visible(fn (Get $get) => $get('discount.percent'))
+                        ->content(fn (Get $get) => "-$ " . Number::format($get('discount.amount'))),
                     Placeholder::make('label-delivery')->label('Envio')
                         ->default(0)
-                        ->content(fn(Get $get) => "$ " . Number::format($get('delivery'))),
-                    Placeholder::make('label-total')->label('Total')->content(fn(Get $get) => "$ " . Number::format($get('total'))),
+                        ->content(fn (Get $get) => "$ " . Number::format($get('delivery'))),
+                    Placeholder::make('label-total')->label('Total')->content(fn (Get $get) => "$ " . Number::format($get('total'))),
                 ])
         ];
     }
@@ -147,21 +147,7 @@ class SaleResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('payment_type')->label('Tipo de pago')->options(SalePaymentTypeEnum::class),
-                Filter::make('created_at')
-                    ->form([
-                        DatePicker::make('created_from')->label('Fecha desde'),
-                        DatePicker::make('created_until')->label('Fecha hasta'),
-                    ])->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    })
+                self::filtersDate()
 
             ])
             ->actions([
@@ -172,15 +158,26 @@ class SaleResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->filtersTriggerAction(
-                fn(Action $action) => $action
-                    ->button()
-                    ->label('Filtros'),
-            );
-        ;
+            ]);
     }
-
+    public static function filtersDate()
+    {
+        return Filter::make('created_at')
+            ->form([
+                DatePicker::make('created_from')->label('Fecha desde')->native(false),
+                DatePicker::make('created_until')->label('Fecha hasta')->native(false),
+            ])->query(function (Builder $query, array $data): Builder {
+                return $query
+                    ->when(
+                        $data['created_from'],
+                        fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                    )
+                    ->when(
+                        $data['created_until'],
+                        fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                    );
+            });
+    }
     public static function getRelations(): array
     {
         return [

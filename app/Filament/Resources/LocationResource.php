@@ -10,6 +10,7 @@ use App\Models\Location;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,6 +29,7 @@ class LocationResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(1)
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->translateLabel()
@@ -56,7 +58,7 @@ class LocationResource extends Resource
 
                 Tables\Columns\TextColumn::make('nameType')
                     ->translateLabel()
-                    ->description(fn(Location $record): string => $record->address)
+                    ->description(fn (Location $record): string => $record->address)
                     ->wrap()
                     ->searchable(),
                 // Tables\Columns\TextColumn::make('phone')
@@ -94,7 +96,7 @@ class LocationResource extends Resource
                 //     ->label('Ver Productos')
                 //     ->url(fn (Location $record): string => route('filament.admin.resources.locations.products', $record)),
 
-                Tables\Actions\EditAction::make()->color('info')->icon(null),
+                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::ExtraLarge),
                 Tables\Actions\DeleteAction::make()->icon(null),
 
             ])
@@ -117,8 +119,8 @@ class LocationResource extends Resource
     {
         return [
             'index' => Pages\ListLocations::route('/'),
-            'create' => Pages\CreateLocation::route('/create'),
-            'edit' => Pages\EditLocation::route('/{record}/edit'),
+            // 'create' => Pages\CreateLocation::route('/create'),
+            // 'edit' => Pages\EditLocation::route('/{record}/edit'),
             // 'products' => Pages\LocationProductsRelation::route('/{record}/products'),
             'products' => Pages\ManageLocationProducts::route('/{record}/products'),
 

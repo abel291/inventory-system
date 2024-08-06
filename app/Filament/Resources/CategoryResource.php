@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,13 +32,14 @@ class CategoryResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(1)
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->live()
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    // ->live()
+                    // ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
                     ->required(),
-                Forms\Components\TextInput::make('slug')
-                    ->disabled(),
+                // Forms\Components\TextInput::make('slug')
+                //     ->disabled(),
                 Forms\Components\FileUpload::make('img')->image()
                     ->required(),
             ]);
@@ -58,14 +60,13 @@ class CategoryResource extends Resource
                     ->label('Modificado')
                     ->since(),
 
-
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->icon(null)->icon(false),
-                Tables\Actions\DeleteAction::make()->icon(false),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

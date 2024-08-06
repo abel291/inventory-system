@@ -33,6 +33,11 @@ class Location extends Model
         return $this->hasMany(Stock::class);
     }
 
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class);
+    }
+
     public function scopeActive(Builder $query): void
     {
         $query->where('active', 1);

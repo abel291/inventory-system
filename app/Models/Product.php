@@ -30,6 +30,11 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function sales(): BelongsToMany
+    {
+        return $this->belongsToMany(Sale::class, 'sale_products')->withPivot(['price', 'quantity', 'total']);
+    }
+
     public function locations(): BelongsToMany
     {
         return $this->belongsToMany(Location::class, 'stock')->distinct('location_id')->withPivot(['quantity']);

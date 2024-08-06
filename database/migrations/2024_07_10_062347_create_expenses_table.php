@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('reason');
             $table->unsignedMediumInteger('amount');
             $table->string('note');
-            $table->timestamp('date');
             $table->foreignId('expense_type_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

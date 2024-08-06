@@ -28,7 +28,7 @@ class ExpenseStats extends BaseWidget
         return [
             Stat::make(
                 'Total Gastos los ultimos 30 dias',
-                "$" . Number::format($expense->sum('amount'), precision: '0', locale: 'es')
+                Number::currency($expense->sum('amount'))
             )->chart($expense->pluck('amount')->toArray()),
             Stat::make('Gastos producidos', Number::format($expense->count())),
             // Stat::make('Precio medio', Number::currency($products->avg('price'), 'COP', locale: 'es')),

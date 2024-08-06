@@ -7,6 +7,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Infolists\Infolist;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Filters\SelectFilter;
@@ -55,6 +56,11 @@ class AppServiceProvider extends ServiceProvider
             $table->defaultPaginationPageOption(10)->defaultSort('id', 'desc');
             // $table->filtersLayout(FiltersLayout::AboveContent);
             $table->searchDebounce('400ms');
+            $table->filtersTriggerAction(
+                fn (Action $action) => $action
+                    ->button()
+                    ->label('Filtros'),
+            );;
         });
 
         Infolist::$defaultDateTimeDisplayFormat = 'M j, Y h:i a';

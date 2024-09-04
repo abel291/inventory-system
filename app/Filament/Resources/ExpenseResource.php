@@ -29,18 +29,19 @@ class ExpenseResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('reason')->label('Motivo')->required(),
-                Forms\Components\TextInput::make('amount')->label('Monto')->required()->numeric()->minValue(1),
-                Forms\Components\TextInput::make('note')->label('Observacion'),
-                Forms\Components\DatePicker::make('date')->label('Fecha')->required(),
-
                 Forms\Components\Select::make('expenseType.name')->label('Tipo de gasto')
                     ->relationship('expenseType', 'name')
                     ->required()
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')->label('Nombre')
                             ->required(),
-                    ])->columnSpanFull()
+                    ])->columnSpanFull(),
+                Forms\Components\TextInput::make('reason')->label('Motivo')->required()->columnSpanFull(),
+                Forms\Components\TextInput::make('amount')->label('Monto')->required()->prefix('$')->numeric()->minValue(1),
+
+                Forms\Components\TextInput::make('note')->label('Observacion')->columnSpanFull(),
+
+
 
             ]);
     }
@@ -61,6 +62,7 @@ class ExpenseResource extends Resource
                 SaleResource::filtersDate()
             ], layout: FiltersLayout::Dropdown)
             ->actions([
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::TwoExtraLarge),
                 Tables\Actions\EditAction::make()->modalWidth(MaxWidth::TwoExtraLarge),
                 Tables\Actions\DeleteAction::make(),
             ])

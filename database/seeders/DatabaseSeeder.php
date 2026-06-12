@@ -31,4 +31,8 @@ class DatabaseSeeder extends Seeder
 
         ]);
     }
+    public static function getPathProductJson()
+    {
+        return '/products/products-clothes.json';
+    }
 }

@@ -19,7 +19,7 @@ class ProductSeeder extends Seeder
     {
         Product::truncate();
 
-        $products_json = collect(Storage::json(env('DB_FAKE_PRODUCTS')))->shuffle();
+        $products_json = collect(Storage::json(DatabaseSeeder::getPathProductJson()))->shuffle();
 
         $categories = Category::select('id', 'name')->get()->pluck('id', 'name');
 

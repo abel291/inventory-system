@@ -17,7 +17,7 @@ class CategorySeeder extends Seeder
     {
         Category::truncate();
         // dd(env('DB_FAKE_PRODUCTS'));
-        $products = collect(Storage::json(env('DB_FAKE_PRODUCTS')));
+        $products = collect(Storage::json(DatabaseSeeder::getPathProductJson()));
 
         $categories = $products->unique('category')->map(function ($item) {
 

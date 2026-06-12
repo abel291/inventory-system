@@ -18,14 +18,14 @@ class SaleService
 {
     public static function generateCode($key = ''): string
     {
-        $week = strtoupper(now()->isoFormat('dd'));
+        $week = strtoupper(Str::slug(now()->isoFormat('dd')));
         return $week . Str::padLeft($key . fake()->bothify('###'), 6, '0');
     }
 
     public static function calculateSubTotal($products): string
     {
 
-        $selectedProducts = collect($products)->filter(fn ($item) => !empty($item['product_id']) && !empty($item['quantity']));
+        $selectedProducts = collect($products)->filter(fn($item) => !empty($item['product_id']) && !empty($item['quantity']));
 
         $prices = Product::find($selectedProducts->pluck('product_id'))->pluck('price', 'id');
 

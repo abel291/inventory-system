@@ -41,9 +41,7 @@ class ViewSale extends ViewRecord
     }
 
     #[On('refreshViewSale')]
-    public function refresh(): void
-    {
-    }
+    public function refresh(): void {}
 
     public function infolist(Infolist $infolist): Infolist
     {
@@ -81,12 +79,12 @@ class ViewSale extends ViewRecord
 
                         ])->columns(4)->columnStart(2)->alignment(Alignment::End),
                         Section::make([
-                            TextEntry::make('client.name')->label('Cliente'),
-                            TextEntry::make('client.phone')->label('Telefono'),
-                            TextEntry::make('client.email')->label('Email'),
-                            TextEntry::make('client.nit')->label('Nit'),
-                            TextEntry::make('location.nameType')->label('Ubicacion'),
-                            TextEntry::make('user.name')->label('Vendedor'),
+                            TextEntry::make('data.user.name')->label('Cliente'),
+                            TextEntry::make('data.user.phone')->label('Telefono'),
+                            TextEntry::make('data.user.email')->label('Email'),
+                            // TextEntry::make('data.user.nit')->label('Nit'),
+                            // TextEntry::make('location.nameType')->label('Ubicacion'),
+                            // TextEntry::make('user.name')->label('Vendedor'),
                             TextEntry::make('status')->label('Estado')->badge(),
 
                             ViewEntry::make('products')->columnSpanFull()->view('filament.infolists.sales-view')
